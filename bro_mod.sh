@@ -3,7 +3,6 @@
 #This is used when we made some changes to experiments nad we don't want to reinstall everything
 
 #update all of the experiments in the git repo 
-cd bro_experiments/
 git pull
 
 #remove the default caputre-loss.bro script

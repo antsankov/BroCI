@@ -1,20 +1,15 @@
-#bro script checks for 'js' in a connection url and logs it
+#bro script checks for '5001/tcp' in a packet and logs it
 
-global x:int = 0;
+global x1:int = 0;
 
 export {
         redef enum Log::ID += { small_1 };
 
         type hit_record: record {
-                ## Timestamp for when the measurement occurred.
+
                 ts:           time     &log;
-                
-                ## Number of missed ACKs from the previous measurement interval.
                 hits:         int    &log;
         };
-
-        ## The interval at which capture loss reports are created.
-        const watch_interval = 1secs &redef;
 }
 
 
@@ -24,24 +19,22 @@ event bro_init()
 		print "small_script_1 starting!";
 	}
 
-
- 
-event http_request(c: connection, method: string, original_URI: string, unescaped_URI: string, version: string)
-	{
-	if ("js" in original_URI)
-		{
-			x+=1;
-			local now = network_time(); 
-			local info: hit_record = [$ts = now,
-					    $hits = x];	
-			Log::write(small_1,info);
-		}
-	}
-
+event new_packet(c:connection, p:pkt_hdr)
+        {
+        local now = network_time();
+        if (5001/tcp == c$id$resp_p)
+                {
+                        x1+=1;
+                        print "small HIT 1";
+                        local rec0: hit_record = [$ts = now,
+                                            $hits = x1];
+                        Log::write(small_1,rec0);
+                }
+        } 
 
 event bro_done()
 	{
         
-		print fmt("Small script is finished with: %s",x);	
+		print fmt("Small script is finished with: %s",x1);	
 	}
 

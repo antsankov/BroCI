@@ -6,10 +6,7 @@ export {
         redef enum Log::ID += { small_2 };
 
         type hit_record: record {
-                ## Timestamp for when the measurement occurred.
-                ts:           time     &log;
-                
-                ## Number of missed ACKs from the previous measurement interval.
+                ts:           time     &log; 
                 hits:         int    &log;
         };
 
@@ -23,19 +20,18 @@ event bro_init()
 	}
 
 
- 
-event http_request(c: connection, method: string, original_URI: string, unescaped_URI: string, version: string)
-	{
-	if ("css" in original_URI)
-		{
-			y+=1;
-			local now = network_time(); 
-			local info: hit_record = [$ts = now,
-					    $hits = y];	
-			Log::write(small_2,info);
-		}
-	}
-
+event new_packet(c:connection, p:pkt_hdr)
+        {
+        local now = network_time();
+        if (5002/tcp == c$id$resp_p)
+                {
+                        y+=1;
+                        print "small HIT 2";
+                        local rec0: hit_record = [$ts = now,
+                                            $hits = y];
+                        Log::write(small_2,rec0);
+                }
+        } 
 
 event bro_done()
 	{
