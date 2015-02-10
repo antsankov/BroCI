@@ -24,6 +24,14 @@ class netstat:
 	def success_rate(self):
 		return (self.recvd / self.link)
 
+class capstat: 
+
+	def __init__(self,interface,kbps,mbps,avg):
+		self.inteface = interface
+		self.kbps = kbps
+		self.mbps = mbps
+		self.avg = avg
+
 def collect_netstats():
 
 	#Output comes out like: 'bro: 1423522199.184053 recvd=22756 dropped=4071 link=26827'
@@ -33,9 +41,30 @@ def collect_netstats():
 	
 	return netstat_snapshot
 
+def collect_capstats():
+	capstats_snapshot = []
+	#capstats seems to output on the stderror FD 
+	capstats_string = subprocess.check_output('sudo /usr/local/bro/bin/broctl capstats',stderr=subprocess.STDOUT, shell=True)
+	#split capstats into multiple lines
+	capstats_split_line = capstats_string.splitlines()
+	
+	#go through the lines for the different interfaces, starting on the third
+	for i in range (3, len(capstats_split_line)):
+		#split on the words
+		capstats_split_word = capstats_split_line[i].split()
+		#instatiate a capstats_snapshot for each of the interfaces and add it to our capstats_snapshot list 
+		try: 
+			capstats_snapshot.append(capstat(capstats_split_word[0],capstats_split_word[1],capstats_split_word[2],capstats_split_word[3]))
+		#if there is no traffic, the avg is simply null
+		except: 
+			capstats_snapshot.append(capstat(capstats_split_word[0],capstats_split_word[1],capstats_split_word[2],0))
+	
+	return capstats_snapshot
+
 def main():	
 	starttime=time.time()
 	netstat_snapshots = []
+	collect_capstats()
 	#this collects a snapshot every ten seconds 
 	while True:
 		netstat_snapshot = collect_netstats()
@@ -44,6 +73,7 @@ def main():
 		print  netstat_snapshot.confirm()
 		print  netstat_snapshot.loss_rate()
 		print  netstat_snapshot.success_rate()
+		
 		time.sleep(10.0 - ((time.time() - starttime) % 10.0))
 
 if __name__ == "__main__": 
