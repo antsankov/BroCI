@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import sched, time
-import subprocess
+import subprocess,time
 
 class netstat:
 	
@@ -23,14 +22,31 @@ class netstat:
 
 	def success_rate(self):
 		return (self.recvd / self.link)
+	
+	def print_all(self):
+		print('NETSTAT')
+                print("Device: {}".format(self.device))
+                print("Time: {}".format(self.time))
+                print("Recvd: {}".format(self.recvd))
+                print("Dropped: {}".format(self.dropped)) 
+                print("Link: {}".format(self.link))
+		print('======')
 
 class capstat: 
 
 	def __init__(self,interface,kbps,mbps,avg):
-		self.inteface = interface
+		self.interface = interface
 		self.kbps = kbps
 		self.mbps = mbps
 		self.avg = avg
+
+	def print_all(self):
+		print('CAPSTAT')
+		print("Interface: {}".format(self.interface))
+		print("kbps: {}".format(self.kbps))
+		print("mbps: {}".format(self.mbps))
+		print("avg: {}".format(self.avg))
+		print('------')
 
 def collect_netstats():
 
@@ -63,17 +79,20 @@ def collect_capstats():
 
 def main():	
 	starttime=time.time()
+	
 	netstat_snapshots = []
+	capstat_snapshots = []
 	collect_capstats()
 	#this collects a snapshot every ten seconds 
 	while True:
+		capstat_snapshot = collect_capstats()
+		capstat_snapshots.append(capstat_snapshot)
+		capstat_snapshot[0].print_all()
+		
 		netstat_snapshot = collect_netstats()
 		netstat_snapshots.append(netstat_snapshot)
-		print  netstat_snapshot.recvd
-		print  netstat_snapshot.confirm()
-		print  netstat_snapshot.loss_rate()
-		print  netstat_snapshot.success_rate()
-		
+		netstat_snapshot.print_all()
+	
 		time.sleep(10.0 - ((time.time() - starttime) % 10.0))
 
 if __name__ == "__main__": 
