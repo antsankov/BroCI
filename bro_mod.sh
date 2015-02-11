@@ -8,7 +8,7 @@ echo 'Starting bro_mod'
 #remove the default caputre-loss.bro script
 sudo rm /usr/local/bro/share/bro/policy/misc/capture-loss.bro
 #copy the bro scripts in the experiments directory to the misc folder for them to be tested 
-sudo cp *.bro /usr/local/bro/share/bro/policy/misc
+sudo cp ./bro_scripts/*.bro /usr/local/bro/share/bro/policy/misc
 
 #remove the current local.bro loader
 sudo rm /usr/local/bro/share/bro/site/local.bro

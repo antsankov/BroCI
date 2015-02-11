@@ -9,15 +9,8 @@ sudo make install
 pwd
 export PATH=/usr/local/bro/bin:$PATH
 cd .. 
-#copy my experiment scripts in 
-sudo rm /usr/local/bro/share/bro/policy/misc/capture-loss.bro
-sudo cp bro_experiments/*.bro /usr/local/bro/share/bro/policy/misc
 
-#remove the current local.bro loader
-sudo rm /usr/local/bro/share/bro/site/local.bro
-
-#copy the correct version of local.bro to the proper site. 
-sudo cp bro_experiments/local.bro  /usr/local/bro/share/bro/site/
+/users/alts/bro_experiments/bro_mod.sh
 
 #config the right editor
 sudo update-alternatives --config editor
