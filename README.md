@@ -9,7 +9,8 @@ This readme is mainly for my own personal notes where I can log interesting comm
 * Change loaded scripts in local.bro
 
 ## Commands
-Tcpreplay sample command on n0: ```sudo tcpreplay --topspeed --loop=0 --intf1=eth2 c1_final.pcap```Convert file to be transmitted fron n0: ```tcprewrite --dstipmap=0.0.0.0/0:10.1.1.3 --enet-dmac=00:04:23:b7:41:f0 --srcipmap=0.0.0.0/0:10.1.1.2 --enet-smac=00:04:23:a8:da:62 --fixcsum --infile=browse.pcap --outfile=temp1.pcap ```
+*Tcpreplay sample command on n0: ```sudo tcpreplay --topspeed --loop=0 --intf1=eth2 c1_final.pcap```
+*Convert file to be transmitted fron n0: ```tcprewrite --dstipmap=0.0.0.0/0:10.1.1.3 --enet-dmac=00:04:23:b7:41:f0 --srcipmap=0.0.0.0/0:10.1.1.2 --enet-smac=00:04:23:a8:da:62 --fixcsum --infile=browse.pcap --outfile=temp1.pcap ```
 
 ## Locations
 * Logs: ```/usr/local/bro/logs```
