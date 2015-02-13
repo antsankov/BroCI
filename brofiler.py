@@ -51,6 +51,7 @@ class netstat:
 		print('======')
 
 class capstat: 
+
 	'''Output of link information returned by 'broctl snapshots', based on a 10s average: 
 
 	localhost/eth2        36.3       25.6
@@ -77,13 +78,14 @@ class capstat:
 		print('------')
 
 def collect_netstats():
+	
 	''' This function reutrns an array of netstat objects for each bro device returned by 'broctl netstats'.
 	
 	[BroControl] > netstats
         	bro: 1423861198.685558 recvd=25118568 dropped=69563523 link=94682096 
         	shmo: 1423861198.685558 recvd=500 dropped=1337 link=1837
 	
-	This would create two netstat objects, bro and shmo, put them into an array, the netstats_snapshot, and return the array
+	This would create two netstat objects, bro and shmo, put them into an array based on the time, the netstats_snapshot, and return the array
 	'''
 	netstats_snapshot = []
 	
@@ -101,20 +103,32 @@ def collect_netstats():
 	return netstats_snapshot
 
 def collect_capstats():
+
+	'''This function returns an array of capstat object for each inteface returned by 'broctl capstats'
+	
+	[BroControl] > capstats
+
+	Interface             kpps       mbps       (10s average)
+	----------------------------------------
+	localhost/eth2        36.3       25.6
+
+	This would create a single netstat object, put it into the array capstats_snapshot, and return it. 
+	'''
+
 	capstats_snapshot = []
-	#capstats seems to output on the stderror FD 
+	#NOTE: capstats seems to output on the stderror FD NOT stdout  
 	capstats_string = subprocess.check_output('sudo /usr/local/bro/bin/broctl capstats',stderr=subprocess.STDOUT, shell=True)
 	#split capstats into multiple lines
 	capstats_split_line = capstats_string.splitlines()
 	
-	#go through the lines for the different interfaces, starting on the third
+	#go through the lines for the different interfaces, starting on the third (first two are useless)
 	for i in range (3, len(capstats_split_line)):
 		#split on the words
 		capstats_split_word = capstats_split_line[i].split()
 		
-		if (len(capstats_split_word) is 0):
-			print('0 length capstats!')
+		if (len(capstats_split_word) is 0):	
 			return 
+		
 		#instatiate a capstats_snapshot for each of the interfaces and add it to our capstats_snapshot list 
 		capstats_snapshot.append(capstat(capstats_split_word[0],capstats_split_word[1],capstats_split_word[2]))
 	
@@ -122,27 +136,37 @@ def collect_capstats():
 
 
 def analyze_netstats(netstat_snapshots):
-	
+	'''This takes in an array of netstat snapshots, each of which contain information about multiple devices. It looks at the first snapshot in the array
+	and calculates the avg success and failure based on this.   
+
+	Returns a useless boolean for now, change to important data in the future.
+	'''
+
 	total_success = 0
 
 	for netstat_snapshot in netstat_snapshots:
+		#look at the succes rate for the first device for each snapshot,net_snapshot[0], and use it to calculate the avg 
 		total_success += netstat_snapshot[0].success_rate()  	
 
+	#calculate avg based on total number of snapshots
 	avg_success = (total_success/len(netstat_snapshots))
 
 	print("Avg success: {}".format(avg_success))	
 	print("Avg failure: {}".format(1 - avg_success))
+	print('=====')
 	
+	#TODO: return useful data in the future
 	return True
 
 def main():	
+
 	starttime=time.time()
 
-	#this is a collection of snapshots collected every  	
+	#this is a collection of snapshots collected every cycle  	
 	netstat_snapshots = []
 	capstat_snapshots = []
 		
-	#this collects a snapshot every ten seconds 
+	#this collects a snapshot every x seconds 
 	while True:
 		
 		netstat_snapshot = collect_netstats()
