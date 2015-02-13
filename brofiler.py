@@ -3,6 +3,38 @@
 import subprocess,time
 
 
+class bro_device: 
+	''' Used to define the type of bro device we are going to be spinning up. We can create either mangers, proxies, or workers. Only workers require interface information  
+	Class variables- 
+		
+		name: the name of the device
+		role: can either be manger, worker, host, standalone (standalone should only be used for local testing purposes) 
+		host: the host address 
+		inteface: the inteface for bro to observe 
+	'''
+	def __init__(self, name, role, host, interface='null'):
+		self.name = name 
+		self.role = role
+		self.host = host 
+		self.interface = interface
+	
+	def config_format(self):
+
+		if (self.role != ('worker' or 'standalone')):
+			return "[{0}]\n
+				type={1}\n
+				host={2}\n"
+				.format(self.name,self.role,self.host) 
+		
+		else: 	
+			return "[{0}]\n
+				type={1}\n
+				host={2}\n
+				inteface={3}"
+				.format(self.name,self.role,self.host,self.interface) 
+
+
+
 class netstat:
 
 	'''Output of each device reutrned by 'broctl netstats': 
@@ -101,6 +133,7 @@ def collect_netstats():
 		netstats_snapshot.append(netstat(netstats_split[0],netstats_split[1],netstats_split[2],netstats_split[3],netstats_split[4]))
 	
 	return netstats_snapshot
+
 
 def collect_capstats():
 
