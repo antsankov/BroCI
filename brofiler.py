@@ -36,7 +36,7 @@ class bro_device:
 		name: the name of the device
 		role: can either be manger, worker, host, standalone (standalone should only be used for local testing purposes) 
 		host: the host address 
-		inteface: the inteface for bro to observe 
+		interface: the interface for bro to observe 
 	'''
 	def __init__(self, name, role, host, interface='null'):
 		self.name = name 
@@ -50,7 +50,7 @@ class bro_device:
 			return "#\n###OTHER###\n[{0}]\ntype={1}\nhost={2}\n".format(self.name,self.role,self.host) 
 		
 		else: 	
-			return "#\n###WORKER###\n[{0}]\ntype={1}\nhost={2}\ninteface={3}".format(self.name,self.role,self.host,self.interface) 
+			return "#\n###WORKER###\n[{0}]\ntype={1}\nhost={2}\ninterface={3}".format(self.name,self.role,self.host,self.interface) 
 
 class netstat:
 
@@ -107,7 +107,7 @@ class capstat:
 	
 	Contains information about the following- 
 	
-		host/inteface : the inteface of the device being meauserd (TODO - possibly split these into two other object variables)
+		host/interface : the interface of the device being meauserd (TODO - possibly split these into two other object variables)
 		kpps : 10s avg of number of kpps on the link
 		mbps : 10s avg of speed rate on the link
 		
@@ -154,7 +154,7 @@ def collect_netstats():
 
 def collect_capstats():
 
-	'''This function returns an array of capstat object for each inteface returned by 'broctl capstats'
+	'''This function returns an array of capstat object for each interface returned by 'broctl capstats'
 	
 	[BroControl] > capstats
 
@@ -220,7 +220,7 @@ def main():
 	test_config = system_config('/usr/local/bro/etc/node.cfg', 'DUMMY_LOAD_FILE')
 	test_device = bro_device('TEST', 'worker', '1.1.1.1', 'eth0')		
 	
-	#test_config.modify_node_config(test_device)
+	test_config.modify_node_config(test_device)
 
 	#this collects a snapshot every x seconds 
 	while True:
