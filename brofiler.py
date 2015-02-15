@@ -7,8 +7,8 @@ class system_config:
 	'''This is where we define all of the important boiler plate code for interacting with the system
 	Class variables- 
 
-		node_cfg: the lcoation of the node.cfg to be modified by bro_device 
-		load_bro: the location of the load.bro file where we add scripts 
+		node_cfg: the lcoation of the node.cfg to be modified by bro_device : /usr/local/bro/etc/node.cfg
+		load_bro: the location of the load.bro file where we add scripts :  /misc/XXXX
 	'''
 
 	def __init__(self, node_cfg, load_bro):
@@ -18,6 +18,11 @@ class system_config:
 	def modify_node_config(self,bro_device):
 		 with open(self.node_cfg, 'a') as node_cfg_file:
 			node_cfg_file.write(bro_device.config_format())
+
+	def modify_local_file(self):
+		with open(self.load_bro, 'a') as local_bro_file:
+			local_string = "\n###Brofiler###\n@load {0}".format(self.load_bro)
+			local_bro_file.write(local_string)
 	
 	def broctl_install(self):
 		subprocess.check_output('sudo /usr/local/bro/bin/broctl install', shell=True)
