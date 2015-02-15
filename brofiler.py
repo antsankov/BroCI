@@ -15,13 +15,16 @@ class system_config:
 		self.node_cfg = node_cfg 
 		self.load_bro = load_bro 
 	
+	'''Modify the node config with bro_device information'''
 	def modify_node_config(self,bro_device):
 		 with open(self.node_cfg, 'a') as node_cfg_file:
 			node_cfg_file.write(bro_device.config_format())
 
-	def modify_local_file(self):
+	'''Modifies the local.bro script with the location of the new script on manager. Use broctl_refresh to get nodes to use it'''
+	def modify_local_file(self,bro_script):
 		with open(self.load_bro, 'a') as local_bro_file:
-			local_string = "\n###Brofiler###\n@load {0}".format(self.load_bro)
+			#store scripts to be loaded in brofiler directory on the manager.
+			local_string = "\n###Brofiler###\n@load brofiler/{0}".format(bro_script)
 			local_bro_file.write(local_string)
 	
 	def broctl_install(self):
@@ -30,6 +33,7 @@ class system_config:
 	def broctl_restart(self):				  
 		subprocess.check_output('sudo /usr/local/bro/bin/broctl restart', shell=True)
 
+	'''This installs the new config, and restarts the bro nodes'''
 	def broctl_refresh(self):
 		broctl_install()
 		broctl_restart()
@@ -143,18 +147,21 @@ def collect_netstats():
 	'''
 	netstats_snapshot = []
 	
-	netstats_string = subprocess.check_output('sudo /usr/local/bro/bin/broctl netstats', shell=True)
+	try: 
+		netstats_string = subprocess.check_output('sudo /usr/local/bro/bin/broctl netstats', shell=True)
+		#split on the new lines for each of the devices 
+		netstats_split_line = netstats_string.splitlines()
+		
+		for i in range (0,len(netstats_split_line)):
+			#remove the unwanted characters 
+			netstats_split = netstats_string.strip().replace(':','').replace('recvd=','').replace('dropped=','').replace('link=','').split()
+			#instantiate the object and add it to the array to be returned 
+			netstats_snapshot.append(netstat(netstats_split[0],netstats_split[1],netstats_split[2],netstats_split[3],netstats_split[4]))
+		return netstats_snapshot
 	
-	#split on the new lines for each of the devices 
-	netstats_split_line = netstats_string.splitlines()
-	
-	for i in range (0,len(netstats_split_line)):
-		#remove the unwanted characters 
-		netstats_split = netstats_string.strip().replace(':','').replace('recvd=','').replace('dropped=','').replace('link=','').split()
-		#instantiate the object and add it to the array to be returned 
-		netstats_snapshot.append(netstat(netstats_split[0],netstats_split[1],netstats_split[2],netstats_split[3],netstats_split[4]))
-	
-	return netstats_snapshot
+	except subprocess.CalledProcessError:
+		print('FAILED netstats')
+
 
 
 def collect_capstats():
@@ -222,9 +229,10 @@ def main():
 	capstat_snapshots = []
 	
 
-	test_config = system_config('/usr/local/bro/etc/node.cfg', 'DUMMY_LOAD_FILE')
+	test_config = system_config('/usr/local/bro/etc/node.cfg', '/home/user/local.bro')
 	test_device = bro_device('TEST', 'worker', '1.1.1.1', 'eth0')		
 	
+	#test_config.modify_local_file('TEST_SCRIPT')
 	test_config.modify_node_config(test_device)
 
 	#this collects a snapshot every x seconds 
