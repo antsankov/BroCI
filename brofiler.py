@@ -3,6 +3,32 @@
 import subprocess,time
 
 
+class system_config: 
+	'''This is where we define all of the important boiler plate code for interacting with the system
+	Class variables- 
+
+		node_cfg: the lcoation of the node.cfg to be modified by bro_device 
+		load_bro: the location of the load.bro file where we add scripts 
+	'''
+
+	def __init__(self, node_cfg, load_bro):
+		self.node_cfg = node_cfg 
+		self.load_bro = load_bro 
+	
+	def modify_node_config(self,bro_device):
+		 with open(self.node_cfg, 'a') as node_cfg_file:
+			node_cfg_file.write(bro_device.config_format())
+	
+	def broctl_install(self):
+		subprocess.check_output('sudo /usr/local/bro/bin/broctl install', shell=True)
+
+	def broctl_restart(self):				  
+		subprocess.check_output('sudo /usr/local/bro/bin/broctl restart', shell=True)
+
+	def broctl_refresh(self):
+		broctl_install()
+		broctl_restart()
+	
 class bro_device: 
 	''' Used to define the type of bro device we are going to be spinning up. We can create either mangers, proxies, or workers. Only workers require interface information  
 	Class variables- 
@@ -21,19 +47,10 @@ class bro_device:
 	def config_format(self):
 
 		if (self.role != ('worker' or 'standalone')):
-			return "[{0}]\n
-				type={1}\n
-				host={2}\n"
-				.format(self.name,self.role,self.host) 
+			return "#\n###OTHER###\n[{0}]\ntype={1}\nhost={2}\n".format(self.name,self.role,self.host) 
 		
 		else: 	
-			return "[{0}]\n
-				type={1}\n
-				host={2}\n
-				inteface={3}"
-				.format(self.name,self.role,self.host,self.interface) 
-
-
+			return "#\n###WORKER###\n[{0}]\ntype={1}\nhost={2}\ninteface={3}".format(self.name,self.role,self.host,self.interface) 
 
 class netstat:
 
@@ -198,7 +215,13 @@ def main():
 	#this is a collection of snapshots collected every cycle  	
 	netstat_snapshots = []
 	capstat_snapshots = []
-		
+	
+
+	test_config = system_config('/usr/local/bro/etc/node.cfg', 'DUMMY_LOAD_FILE')
+	test_device = bro_device('TEST', 'worker', '1.1.1.1', 'eth0')		
+	
+	#test_config.modify_node_config(test_device)
+
 	#this collects a snapshot every x seconds 
 	while True:
 		
