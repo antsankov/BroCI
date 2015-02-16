@@ -241,7 +241,7 @@ def main():
 	#test_config.modify_node_config(test_device)
 
 	#this collects a snapshot every x seconds 
-	for i in range (0,9):	
+	for i in range (0,100):	
 		
 		netstat_snapshot = collect_netstats()
 		netstat_snapshots.append(netstat_snapshot)
