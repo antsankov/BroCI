@@ -26,18 +26,7 @@ class system_config:
 			#store scripts to be loaded in brofiler directory on the manager.
 			local_string = "\n###Brofiler###\n@load brofiler/{0}".format(bro_script)
 			local_bro_file.write(local_string)
-	
-	def broctl_install(self):
-		subprocess.check_output('sudo /usr/local/bro/bin/broctl install', shell=True)
 
-	def broctl_restart(self):				  
-		subprocess.check_output('sudo /usr/local/bro/bin/broctl restart', shell=True)
-
-	'''This installs the new config, and restarts the bro nodes'''
-	def broctl_refresh(self):
-		broctl_install()
-		broctl_restart()
-	
 class bro_device: 
 	''' Used to define the type of bro device we are going to be spinning up. We can create either mangers, proxies, or workers. Only workers require interface information  
 	Class variables- 
@@ -96,8 +85,11 @@ class netstat:
 
 	''' Success rate percentage is determiend by success divided by total on link'''  
 	def success_rate(self):
-		return (self.recvd / self.link)
-	
+		if (self.link != 0):
+			return (self.recvd / self.link)
+		else:
+			return 1
+ 
 	''' Prints all of the useful information conatined in this object, useful for debugging purposes'''
 	def print_all(self):
 		print('NETSTAT')
@@ -219,11 +211,24 @@ def analyze_netstats(netstat_snapshots):
 	
 	#TODO: return useful data in the future
 	return True
+		
+def broctl_install():
+	subprocess.check_output('sudo /usr/local/bro/bin/broctl install', shell=True)
+
+def broctl_restart():				  
+	subprocess.check_output('sudo /usr/local/bro/bin/broctl restart', shell=True)
+
+def broctl_refresh():
+	broctl_install()
+	broctl_restart()	
+
 
 def main():	
 
 	starttime=time.time()
 
+	broctl_refresh()
+	
 	#this is a collection of snapshots collected every cycle  	
 	netstat_snapshots = []
 	capstat_snapshots = []
@@ -233,10 +238,10 @@ def main():
 	test_device = bro_device('TEST', 'worker', '1.1.1.1', 'eth0')		
 	
 	#test_config.modify_local_file('TEST_SCRIPT')
-	test_config.modify_node_config(test_device)
+	#test_config.modify_node_config(test_device)
 
 	#this collects a snapshot every x seconds 
-	while True:
+	for i in range (0,9):	
 		
 		netstat_snapshot = collect_netstats()
 		netstat_snapshots.append(netstat_snapshot)
@@ -246,7 +251,7 @@ def main():
 #		capstat_snapshot = collect_capstats()
 #		capstat_snapshots.append(capstat_snapshot)
 #		capstat_snapshot[0].print_all()
-	
+		i+=1
 		analyze_netstats(netstat_snapshots)
 		time.sleep(5.0 - ((time.time() - starttime) % 5.0))
 
