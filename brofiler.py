@@ -65,6 +65,53 @@ class bro_device:
                 self.host,
                 self.interface)
 
+class top: 
+   
+    """Output of each device reutrned by 'broctl top':
+
+    bro          standalone localhost     8292    parent  964M    71M  32%  bro 
+
+    Contains information about the following-
+
+        name : the name of the device  
+        time: the time that the measurment was taken, in Unix epoc time, THIS IS THE TIME ON THE BROFILER
+        role: the type of device (worker, manager, etc.)
+        host: the ip of the device in question  
+        pid: the pid of the proces
+        proc: whether or not if its a parent/child (possibly useless?)
+        vsize: virtual memory assigned to the process (possibly useless?)
+        rss: physical memory actually being used
+        cpu: the amount of cpu being used by the process
+    """
+    def __init__(self, time, name, role, host, pid, proc, vsize, rss, cpu):
+        self.name = name
+        self.time = time
+        self.role = role
+        self.host = host 
+        self.pid = pid 
+        self.proc = proc
+        self.vsize = vsize
+        self.rss = rss 
+        self.cpu = cpu 
+        
+    def print_all(self):
+        """ Prints all of the useful information conatined in this object, useful for debugging purposes"""
+        print('TOP')
+        print("name: {}".format(self.name))
+        print("time: {}".format(self.time))
+        print("role: {}".format(self.role))
+        print("host: {}".format(self.host))
+        print("pid: {}".format(self.pid))
+        print("proc: {}".format(self.proc))
+        print("vsize: {}".format(self.vsize))
+        print("rss: {}".format(self.rss))
+        print("cpu: {}".format(self.cpu)) 
+        print('======')
+
+    def csv_format(self):
+        return "{},{},{},{},{},{},{},{},{}\n".format(self.time,self.name,self.role,self.host,self.pid,self.proc,self.vsize,self.rss,self.cpu)
+
+
 
 class netstat:
 
@@ -150,6 +197,59 @@ class capstat:
     def csv_format(self):
         return "{},{},{}\n".format(self.interface, self.kpps, self.mbps)
 
+
+def collect_top():
+    
+    """ This function reutrns an array of top objects for each bro device returned by 'broctl top'.
+
+    [BroControl] > top
+                Name         Type       Host          Pid     Proc    VSize  Rss   Cpu  Cmd
+                bro          standalone localhost     8292    parent    1G    71M  32%  bro
+                bro          standalone localhost     8294    child    90M    47M  26%  bro
+    
+    This would create two top objects, bro and shmo, put them into an array, the top_snapshot, and return the array
+    """
+    top_snapshot = []
+
+    try:
+        netstats_string = subprocess.check_output(
+            'sudo /usr/local/bro/bin/broctl top',
+            stderr = subprocess.STDOUT,
+            shell=True)
+
+        # split on the new lines for each of the devices
+        top_split_line = netstats_string.splitlines()
+
+        start_line = 1
+
+        if "warning: removing stale lock" in top_split_line[0]:
+            start_line = 2
+
+        for i in range(start_line, len(top_split_line)):
+            # remove the unwanted characters
+            top_split = top_split_line[i].strip().split()
+            # instantiate the object and add it to the array to be returned
+            top_snapshot.append(
+                top(
+                    top_split[0],
+                    time.time(),
+                    top_split[1],
+                    top_split[2],
+                    top_split[3],
+                    top_split[4],
+                    top_split[5],
+                    top_split[6],
+                    top_split[7]))
+
+        with open("top.csv","a") as f:
+            print("{} top_devices in snap".format(len(top_snapshot))) 
+            for top_device in top_snapshot: 
+                f.write(top_device.csv_format())
+	
+        return top_snapshot
+
+    except subprocess.CalledProcessError:
+        print('FAILED top')
 
 def collect_netstats():
     
@@ -260,6 +360,10 @@ def csv_init():
         writer = csv.writer(capcsv)
         writer.writerow(["Interface/Device","kpps","mbps"])
 
+    with open('top.csv', "wb") as topcsv:
+        writer = csv.writer(topcsv)
+        writer.writerow(["Name","Time","Role","Host","Pid","Proc", "VSize", "Rss", "Cpu"])
+
 def broctl_install():
     subprocess.check_output(
         'sudo /usr/local/bro/bin/broctl install',
@@ -286,6 +390,7 @@ def main():
     # this is a collection of snapshots collected every cycle
     netstat_snapshots = []
     capstat_snapshots = []
+    top_snapshots = []
 
     test_config = system_config(
         '/usr/local/bro/etc/node.cfg',
@@ -297,6 +402,10 @@ def main():
 
     # this collects a snapshot every x seconds
     for i in range(0, 100):
+
+        top_snapshot = collect_top()
+        top_snapshots.append(top_snapshot)
+        top_snapshot[0].print_all()
 
         netstat_snapshot = collect_netstats()
         netstat_snapshots.append(netstat_snapshot)
