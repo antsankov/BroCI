@@ -4,7 +4,7 @@
 
 import subprocess
 import time
-
+import csv
 
 class system_config:
 
@@ -37,7 +37,7 @@ class bro_device:
 
     """ Used to define the type of bro device we are going to be spinning up. We can create either mangers, proxies, or workers. Only workers require interface information
     Class variables-
-        Ï
+        
         name: the name of the device
         role: can either be manger, worker, host, standalone (standalone should only be used for local testing purposes)
         host: the host address
@@ -115,7 +115,9 @@ class netstat:
         print("Dropped: {}".format(self.dropped))
         print("Link: {}".format(self.link))
         print('======')
-
+    
+    def csv_format(self):
+        return "{},{},{},{},{},{}\n".format(self.device,self.time,self.recvd,self.dropped,self.link,self.success_rate())
 
 class capstat:
 
@@ -145,8 +147,12 @@ class capstat:
         print("mbps: {}".format(self.mbps))
         print('------')
 
+    def csv_format(self):
+        return "{},{},{}\n".format(self.interface, self.kpps, self.mbps)
+
 
 def collect_netstats():
+    
     """ This function reutrns an array of netstat objects for each bro device returned by 'broctl netstats'.
 
     [BroControl] > netstats
@@ -183,6 +189,11 @@ def collect_netstats():
                     netstats_split[2],
                     netstats_split[3],
                     netstats_split[4]))
+
+        with open("netstats.csv","a") as f: 
+            for net_device in netstats_snapshot: 
+                f.write(net_device.csv_format())
+	
         return netstats_snapshot
 
     except subprocess.CalledProcessError:
@@ -203,57 +214,51 @@ def collect_capstats():
 
     capstats_snapshot = []
     # NOTE: capstats seems to output on the stderror FD NOT stdout
-    capstats_string = subprocess.check_output(
-        'sudo /usr/local/bro/bin/broctl capstats',
-        stderr=subprocess.STDOUT,
-        shell=True)
-    # split capstats into multiple lines
-    capstats_split_line = capstats_string.splitlines()
+   
+    try:
+            capstats_string = subprocess.check_output(
+                'sudo /usr/local/bro/bin/broctl capstats',
+                stderr=subprocess.STDOUT,
+                shell=True)
+            # split capstats into multiple lines
+            capstats_split_line = capstats_string.splitlines()
 
-    # go through the lines for the different interfaces, starting on the third
-    # (first two are useless)
-    for i in range(3, len(capstats_split_line)):
-        # split on the words
-        capstats_split_word = capstats_split_line[i].split()
+            # go through the lines for the different interfaces, starting on the third
+            # (first two are useless)
+            for i in range(3, len(capstats_split_line)):
+                # split on the words
+                capstats_split_word = capstats_split_line[i].split()
 
-        if (len(capstats_split_word) is 0):
-            return
+                if (len(capstats_split_word) is 0):
+                    return
 
-        # instatiate a capstats_snapshot for each of the interfaces and add it
-        # to our capstats_snapshot list
-        capstats_snapshot.append(
-            capstat(
-                capstats_split_word[0],
-                capstats_split_word[1],
-                capstats_split_word[2]))
+                # instatiate a capstats_snapshot for each of the interfaces and add it
+                # to our capstats_snapshot list
+                capstats_snapshot.append(
+                    capstat(
+                        capstats_split_word[0],
+                        capstats_split_word[1],
+                        capstats_split_word[2]))
 
-    return capstats_snapshot
+            with open("capstats.csv","a") as f: 
+                for device_cap in capstats_snapshot:
+                    f.write(device_cap.csv_format())
+            
+            return capstats_snapshot
+            
+    except: 
+        print("Capstats fail")
 
 
-def analyze_netstats(netstat_snapshots):
-    """This takes in an array of netstat snapshots, each of which contain information about multiple devices. It looks at the first snapshot in the array
-    and calculates the avg success and failure based on this.
+def csv_init():
 
-    Returns a useless boolean for now, change to important data in the future.
-    """
+    with open('netstats.csv', "wb") as netcsv:
+        writer = csv.writer(netcsv)
+        writer.writerow(["Device","Time","Recieved","Dropped","Total","Success"])
 
-    total_success = 0
-
-    for netstat_snapshot in netstat_snapshots:
-        # look at the succes rate for the first device for each
-        # snapshot,net_snapshot[0], and use it to calculate the avg
-        total_success += netstat_snapshot[0].success_rate()
-
-    # calculate avg based on total number of snapshots
-    avg_success = (total_success / len(netstat_snapshots))
-
-    print("Avg success: {}".format(avg_success))
-    print("Avg failure: {}".format(1 - avg_success))
-    print('=====')
-
-    # TODO: return useful data in the future
-    return True
-
+    with open('capstats.csv', "wb") as capcsv:
+        writer = csv.writer(capcsv)
+        writer.writerow(["Interface/Device","kpps","mbps"])
 
 def broctl_install():
     subprocess.check_output(
@@ -277,7 +282,7 @@ def main():
     starttime = time.time()
 
     broctl_refresh()
-
+    csv_init()
     # this is a collection of snapshots collected every cycle
     netstat_snapshots = []
     capstat_snapshots = []
@@ -297,13 +302,12 @@ def main():
         netstat_snapshots.append(netstat_snapshot)
         netstat_snapshot[0].print_all()
 
+        capstat_snapshot = collect_capstats()
+        capstat_snapshots.append(capstat_snapshot)
+        capstat_snapshot[0].print_all()
 
-#        capstat_snapshot = collect_capstats()
-#        capstat_snapshots.append(capstat_snapshot)
-#        capstat_snapshot[0].print_all()
-        i += 1
-        analyze_netstats(netstat_snapshots)
-        time.sleep(5.0 - ((time.time() - starttime) % 5.0))
+        i += 1 
+        time.sleep(3.0 - ((time.time() - starttime) % 3.0))
 
 if __name__ == "__main__":
     main()

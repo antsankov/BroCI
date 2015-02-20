@@ -10,7 +10,7 @@ pwd
 export PATH=/usr/local/bro/bin:$PATH
 cd .. 
 
-/users/alts/bro_experiments/bro_mod.sh
+~/bro_experiments/bro_mod.sh
 
 #config the right editor
 sudo update-alternatives --config editor
