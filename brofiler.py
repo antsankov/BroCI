@@ -5,8 +5,10 @@
 import subprocess
 import time
 import csv
+import json
+from jsonmerge import merge
 
-class system_config:
+class system_config(object):
 
     """Boiler plate code for interacting with the system
     Class variables-
@@ -33,7 +35,7 @@ class system_config:
             local_bro_file.write(local_string)
 
 
-class bro_device:
+class bro_device(object):
 
     """ Used to define the type of bro device we are going to be spinning up. We can create either mangers, proxies, or workers. Only workers require interface information
     Class variables-
@@ -65,7 +67,7 @@ class bro_device:
                 self.host,
                 self.interface)
 
-class top: 
+class top(object): 
    
     """Output of each device reutrned by 'broctl top':
 
@@ -84,8 +86,8 @@ class top:
         cpu: the amount of cpu being used by the process
     """
     def __init__(self, time, name, role, host, pid, proc, vsize, rss, cpu):
+        self.time = time 
         self.name = name
-        self.time = time
         self.role = role
         self.host = host 
         self.pid = pid 
@@ -97,8 +99,8 @@ class top:
     def print_all(self):
         """ Prints all of the useful information conatined in this object, useful for debugging purposes"""
         print('TOP')
-        print("name: {}".format(self.name))
         print("time: {}".format(self.time))
+        print("name: {}".format(self.name)) 
         print("role: {}".format(self.role))
         print("host: {}".format(self.host))
         print("pid: {}".format(self.pid))
@@ -111,9 +113,7 @@ class top:
     def csv_format(self):
         return "{},{},{},{},{},{},{},{},{}\n".format(self.time,self.name,self.role,self.host,self.pid,self.proc,self.vsize,self.rss,self.cpu)
 
-
-
-class netstat:
+class netstat(object):
 
     """Output of each device reutrned by 'broctl netstats':
 
@@ -164,7 +164,7 @@ class netstat:
         print('======')
     
     def csv_format(self):
-        return "{},{},{},{},{},{}\n".format(self.device,self.time,self.recvd,self.dropped,self.link,self.success_rate())
+        return "{},{},{},{},{},{}\n".format(self.time,self.device,self.recvd,self.dropped,self.link,self.success_rate())
 
 class capstat:
 
@@ -212,13 +212,13 @@ def collect_top():
     top_snapshot = []
 
     try:
-        netstats_string = subprocess.check_output(
+        top_string = subprocess.check_output(
             'sudo /usr/local/bro/bin/broctl top',
             stderr = subprocess.STDOUT,
             shell=True)
 
         # split on the new lines for each of the devices
-        top_split_line = netstats_string.splitlines()
+        top_split_line = top_string.splitlines()
 
         start_line = 1
 
@@ -231,8 +231,8 @@ def collect_top():
             # instantiate the object and add it to the array to be returned
             top_snapshot.append(
                 top(
-                    top_split[0],
                     time.time(),
+                    top_split[0], 
                     top_split[1],
                     top_split[2],
                     top_split[3],
@@ -350,19 +350,16 @@ def collect_capstats():
         print("Capstats fail")
 
 
-def csv_init():
+def file_init():
 
     with open('netstats.csv', "wb") as netcsv:
-        writer = csv.writer(netcsv)
-        writer.writerow(["Device","Time","Recieved","Dropped","Total","Success"])
+         netcsv.write("Device,Time,Recieved,Dropped,Total,Success\n")
 
-    with open('capstats.csv', "wb") as capcsv:
-        writer = csv.writer(capcsv)
-        writer.writerow(["Interface/Device","kpps","mbps"])
+    with open('capstats.csv', "wb") as capcsv: 
+        capcsv.write("Interface/Device,kpps,mbps\n")
 
-    with open('top.csv', "wb") as topcsv:
-        writer = csv.writer(topcsv)
-        writer.writerow(["Name","Time","Role","Host","Pid","Proc", "VSize", "Rss", "Cpu"])
+    with open('top.csv', "wb") as topcsv: 
+        topcsv.write("Time,Device,Role,Host,Pid,Proc,VSize,Rss,Cpu\n")
 
 def broctl_install():
     subprocess.check_output(
@@ -380,13 +377,23 @@ def broctl_refresh():
     broctl_install()
     broctl_restart()
 
-
+def jsonify(snapshot,input_file):
+    result = []
+    for entry in snapshot:
+        result.append(json.dumps(vars(entry),sort_keys=True, indent=4))  
+    
+    with open(input_file, "a") as outfile:
+        json.dump(result, outfile)     
+    
+  
+   
+         
 def main():
 
     starttime = time.time()
 
-    broctl_refresh()
-    csv_init()
+    #broctl_refresh()
+    file_init()
     # this is a collection of snapshots collected every cycle
     netstat_snapshots = []
     capstat_snapshots = []
@@ -406,14 +413,15 @@ def main():
         top_snapshot = collect_top()
         top_snapshots.append(top_snapshot)
         top_snapshot[0].print_all()
+        #jsonify(top_snapshot, "top.json")
 
         netstat_snapshot = collect_netstats()
         netstat_snapshots.append(netstat_snapshot)
         netstat_snapshot[0].print_all()
 
-        capstat_snapshot = collect_capstats()
-        capstat_snapshots.append(capstat_snapshot)
-        capstat_snapshot[0].print_all()
+        #capstat_snapshot = collect_capstats()
+        #capstat_snapshots.append(capstat_snapshot)
+        #capstat_snapshot[0].print_all()
 
         i += 1 
         time.sleep(3.0 - ((time.time() - starttime) % 3.0))
