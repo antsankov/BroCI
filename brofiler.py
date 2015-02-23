@@ -4,9 +4,10 @@
 
 import subprocess
 import time
-import csv
 import json
-from jsonmerge import merge
+
+from pymongo import * 
+
 
 class system_config(object):
 
@@ -134,6 +135,7 @@ class netstat(object):
         self.recvd = float(recvd)
         self.dropped = float(dropped)
         self.link = float(link)
+        self.success_rate = self.recvd / self.link
 
     def confirm(self):
         """ Sanity check if the number of dropped and recvd matches number of packets on the link """
@@ -164,7 +166,7 @@ class netstat(object):
         print('======')
     
     def csv_format(self):
-        return "{},{},{},{},{},{}\n".format(self.time,self.device,self.recvd,self.dropped,self.link,self.success_rate())
+        return "{},{},{},{},{},{}\n".format(self.time,self.device,self.recvd,self.dropped,self.link,self.success_rate)
 
 class capstat:
 
@@ -239,10 +241,9 @@ def collect_top():
                     top_split[4],
                     top_split[5],
                     top_split[6],
-                    top_split[7]))
+                    top_split[7].replace('%','')))
 
-        with open("top.csv","a") as f:
-            print("{} top_devices in snap".format(len(top_snapshot))) 
+        with open("top.csv","a") as f: 
             for top_device in top_snapshot: 
                 f.write(top_device.csv_format())
 	
@@ -377,23 +378,24 @@ def broctl_refresh():
     broctl_install()
     broctl_restart()
 
-def jsonify(snapshot,input_file):
-    result = []
+def add_to_db(snapshot,collection):
+    
     for entry in snapshot:
-        result.append(json.dumps(vars(entry),sort_keys=True, indent=4))  
-    
-    with open(input_file, "a") as outfile:
-        json.dump(result, outfile)     
-    
-  
+        json_snapshot = entry.__dict__  
+        collection.insert(json_snapshot) 
    
-         
 def main():
 
-    starttime = time.time()
+    client = MongoClient('localhost',27017)
+    db = client.brofiler
+    top_collection = db.top
+    netstat_collection = db.netstat
+    capstat_collection = db.capstat
 
-    broctl_refresh()
-    file_init()
+
+    starttime = time.time()
+    # broctl_refresh()
+    # file_init()
     # this is a collection of snapshots collected every cycle
     netstat_snapshots = []
     capstat_snapshots = []
@@ -412,16 +414,17 @@ def main():
 
         top_snapshot = collect_top()
         top_snapshots.append(top_snapshot)
-        top_snapshot[0].print_all()
-        #jsonify(top_snapshot, "top.json")
+        # top_snapshot[0].print_all()
+        add_to_db(top_snapshot, top_collection)
 
         netstat_snapshot = collect_netstats()
         netstat_snapshots.append(netstat_snapshot)
-        netstat_snapshot[0].print_all()
+        # netstat_snapshot[0].print_all()
+        add_to_db(netstat_snapshot, netstat_collection) 
 
-        #capstat_snapshot = collect_capstats()
-        #capstat_snapshots.append(capstat_snapshot)
-        #capstat_snapshot[0].print_all()
+        capstat_snapshot = collect_capstats()
+        capstat_snapshots.append(capstat_snapshot)
+        add_to_db(capstat_snapshot, capstat_collection) 
 
         i += 1 
         time.sleep(3.0 - ((time.time() - starttime) % 3.0))
