@@ -392,7 +392,7 @@ def main():
 
     starttime = time.time()
 
-    #broctl_refresh()
+    broctl_refresh()
     file_init()
     # this is a collection of snapshots collected every cycle
     netstat_snapshots = []
