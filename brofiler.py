@@ -1,13 +1,10 @@
 #!/usr/bin/python
-
 """ Bro profiler controller """
 
 import subprocess
 import time
 import json
-
 from pymongo import * 
-
 
 class system_config(object):
 
@@ -34,7 +31,6 @@ class system_config(object):
             local_string = "\n###Brofiler###\n@load brofiler/{0}".format(
                 bro_script)
             local_bro_file.write(local_string)
-
 
 class bro_device(object):
 
@@ -136,6 +132,7 @@ class netstat(object):
         self.dropped = float(dropped)
         self.link = float(link)
         self.success_rate = self.recvd / self.link
+        self.loss_rate = self.dropped / self.link
 
     def confirm(self):
         """ Sanity check if the number of dropped and recvd matches number of packets on the link """
@@ -143,17 +140,6 @@ class netstat(object):
             return False
         else:
             return True
-
-    def loss_rate(self):
-        """ Loss rate percentage is determiend by dropped divided by total on link"""
-        return self.dropped / self.link
-
-    def success_rate(self):
-        """ Success rate percentage is determiend by success divided by total on link"""
-        if self.link != 0:
-            return self.recvd / self.link
-        else:
-            return 1
 
     def print_all(self):
         """ Prints all of the useful information conatined in this object, useful for debugging purposes"""
@@ -168,7 +154,7 @@ class netstat(object):
     def csv_format(self):
         return "{},{},{},{},{},{}\n".format(self.time,self.device,self.recvd,self.dropped,self.link,self.success_rate)
 
-class capstat:
+class capstat(object):
 
     """Output of link information returned by 'broctl snapshots', based on a 10s average:
 
@@ -185,11 +171,9 @@ class capstat:
     def __init__(self, interface, kpps, mbps):
         self.interface = interface
         self.kpps = kpps
-        self.mbps = mbps
+        self.mbps = mbps 
 
-    """ Prints all of the useful information conatined in this object, useful for debugging purposes"""
-
-    def print_all(self):
+    def print_all(self): 
         print('CAPSTAT')
         print("Interface: {}".format(self.interface))
         print("kpps: {}".format(self.kpps))
@@ -324,8 +308,7 @@ def collect_capstats():
             # split capstats into multiple lines
             capstats_split_line = capstats_string.splitlines()
 
-            # go through the lines for the different interfaces, starting on the third
-            # (first two are useless)
+            # go through the lines for the different interfaces, starting on the third 
             for i in range(3, len(capstats_split_line)):
                 # split on the words
                 capstats_split_word = capstats_split_line[i].split()
@@ -350,7 +333,6 @@ def collect_capstats():
     except: 
         print("Capstats fail")
 
-
 def file_init():
 
     with open('netstats.csv', "wb") as netcsv:
@@ -367,39 +349,36 @@ def broctl_install():
         'sudo /usr/local/bro/bin/broctl install',
         shell=True)
 
-
 def broctl_restart():
     subprocess.check_output(
         'sudo /usr/local/bro/bin/broctl restart',
         shell=True)
 
-
 def broctl_refresh():
     broctl_install()
     broctl_restart()
 
-def add_to_db(snapshot,collection):
-    
+def add_to_db(snapshot,collection):    
     for entry in snapshot:
         json_snapshot = entry.__dict__  
         collection.insert(json_snapshot) 
    
 def main():
-
+    #connect to the db, and get the collections 
     client = MongoClient('localhost',27017)
     db = client.brofiler
-    top_collection = db.top
-    netstat_collection = db.netstat
-    capstat_collection = db.capstat
+    top_c = db.top
+    netstat_c = db.netstat
+    capstat_c = db.capstat
 
+    #clean them on every run 
+    top_c.remove()
+    netstat_c.remove()
+    capstat_c.remove()
 
     starttime = time.time()
     # broctl_refresh()
     # file_init()
-    # this is a collection of snapshots collected every cycle
-    netstat_snapshots = []
-    capstat_snapshots = []
-    top_snapshots = []
 
     test_config = system_config(
         '/usr/local/bro/etc/node.cfg',
@@ -413,18 +392,15 @@ def main():
     for i in range(0, 100):
 
         top_snapshot = collect_top()
-        top_snapshots.append(top_snapshot)
         # top_snapshot[0].print_all()
-        add_to_db(top_snapshot, top_collection)
+        add_to_db(top_snapshot, top_c)
 
-        netstat_snapshot = collect_netstats()
-        netstat_snapshots.append(netstat_snapshot)
+        netstat_snapshot = collect_netstats() 
         # netstat_snapshot[0].print_all()
-        add_to_db(netstat_snapshot, netstat_collection) 
+        add_to_db(netstat_snapshot, netstat_c) 
 
-        capstat_snapshot = collect_capstats()
-        capstat_snapshots.append(capstat_snapshot)
-        add_to_db(capstat_snapshot, capstat_collection) 
+        capstat_snapshot = collect_capstats() 
+        add_to_db(capstat_snapshot, capstat_c) 
 
         i += 1 
         time.sleep(3.0 - ((time.time() - starttime) % 3.0))
