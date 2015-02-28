@@ -1,6 +1,7 @@
 #!/usr/bin/python
 """ Bro profiler controller """
 
+import datetime
 import subprocess
 import time
 import json
@@ -361,6 +362,11 @@ def collect_capstats():
     return capstats_snapshot
     
 
+"""Misc functions"""
+
+
+
+
 def file_init():
 
     with open('netstats.csv', "wb") as netcsv:
@@ -389,9 +395,8 @@ def main():
     top_c.remove()
     netstat_c.remove()
     capstat_c.remove()
-
-    starttime = time.time()
-    #broctl_refresh()
+ 
+    broctl_refresh()
     file_init()
 
     test_config = system_config(
@@ -402,22 +407,19 @@ def main():
     # test_config.modify_local_file('TEST_SCRIPT')
     # test_config.modify_node_config(test_device)
 
-    # this collects a snapshot every x seconds
-    for i in range(0, 100):
+    
+    while True: 
 
-        top_snapshot = collect_top()
-        # top_snapshot[0].print_all()
-        add_to_db(top_snapshot, top_c)
+            top_snapshot = collect_top()
+            # top_snapshot[0].print_all()
+            add_to_db(top_snapshot, top_c)
 
-        netstat_snapshot = collect_netstats() 
-        # netstat_snapshot[0].print_all()
-        add_to_db(netstat_snapshot, netstat_c) 
+            netstat_snapshot = collect_netstats() 
+            # netstat_snapshot[0].print_all()
+            add_to_db(netstat_snapshot, netstat_c) 
 
-        capstat_snapshot = collect_capstats() 
-        add_to_db(capstat_snapshot, capstat_c) 
-
-        i += 1 
-        time.sleep(3.0 - ((time.time() - starttime) % 3.0))
+            capstat_snapshot = collect_capstats() 
+            add_to_db(capstat_snapshot, capstat_c) 
 
 if __name__ == "__main__":
     main()

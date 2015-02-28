@@ -8,6 +8,7 @@
         <link href="{{ url_for(".static", filename="css/bootstrap.min.css") }}" rel="stylesheet">
         <link href="{{ url_for(".static", filename="css/psdash.css") }}" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400' rel='stylesheet' type='text/css'>
+
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -78,7 +79,8 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="main-content"> 
+                    <div class="main-content">
+                        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
                     </div>
                 </div>
             </div>
@@ -89,5 +91,10 @@
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="{{ url_for(".static", filename="js/bootstrap.min.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/psdash.js") }}"></script>
+       
+        <!-- High charts stuff --> 
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+        <script src="{{ url_for(".static", filename="js/successRate.js") }}"></script>
     </body>
 </html>
