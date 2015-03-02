@@ -16,16 +16,17 @@ capstat_c = db.capstat
 
 @app.route('/')
 def base_page(name=None): 
-    #return render_template('base.html',name=name)
+ 
+    #this is where we list our timestamp
     top  = arrow.get('2015-05-11T21:23:58.970460+00:00')
-
+    
     result = []
-
+    
+    #find anything in the top collection before the time stamp
     for measure in top_c.find({'time' : {'$lte' : top.timestamp}}):
-        result.append(measure)
-    
-    
-    return("\n".join(str(result)))  
+        result.append(measure) 
+   
+    return render_template('base.html',test=result,name=name)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80,debug=True)
