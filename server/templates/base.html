@@ -99,7 +99,7 @@
     
 
         <script>
-            var test_db = "{{ test|safe }}"; 
+            var test_db = "{{ test.results|safe }}"; 
             console.log(test_db);
 
             var test_input = [{

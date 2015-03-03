@@ -99,6 +99,7 @@ class top(object):
     """
     def __init__(self, time, name, role, host, pid, proc, vsize, rss, cpu):
         self.time = time 
+        self.identifier = "{}-{}".format(name,role) 
         self.name = name
         self.role = role
         self.host = host 

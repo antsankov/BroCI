@@ -1,4 +1,7 @@
-function SuccessRateGraph(data) { 
+
+function SuccessRateGraph(data,minimum,maximum) { 
+ 
+    console.log(min)
     $('#container').highcharts({
         chart: {
             type: 'line'
@@ -9,8 +12,8 @@ function SuccessRateGraph(data) {
         },
         //hardcoded for now, possibly a param in the future? 
         xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            min: minimum,
+            max: maximum
         },
         yAxis: {
             title: {
