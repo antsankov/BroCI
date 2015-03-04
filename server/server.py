@@ -19,10 +19,10 @@ def base_page(name=None):
  
     #this is where we list our timestamp
     end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
-     
+    test = top_graph('DUMMY',end,12)
     
     #find anything in the top collection before the time stamp
-    return render_template('base.html',test= top_graph('DUMMY_START',end,12),name=name)
+    return render_template('base.html',test= test,name=name)
 
 
 
@@ -33,14 +33,14 @@ class top_graph(object):
         minimum = 1000000000
         maximum = 0
 
-        for measure in top_c.find({'time' : {'$lte' : time.timestamp} }, { '_id': 0,'pid': 1,'cpu': 1,'time':1}).limit(limit):
+        for measure in top_c.find({'time' : {'$lte' : end_time.timestamp} }, { '_id': 0,'pid': 1,'cpu': 1,'time':1}).limit(limit):
             result.append(measure)
-
-            if (result.time < minimum):
-                minimum = result.time
+            time = measure['time']
+            if (time < minimum):
+                minimum = time
             
-            if (result.time > maximum):
-                maximum = result.time
+            if (time > maximum):
+                maximum = time
         
         self.result = result
         self.minimum = minimum 
