@@ -1,7 +1,6 @@
 
 function SuccessRateGraph(data,minimum,maximum) { 
  
-    console.log(min)
     $('#container').highcharts({
         chart: {
             type: 'line'
@@ -10,7 +9,7 @@ function SuccessRateGraph(data,minimum,maximum) {
             text: 'CPU Usage',
             x: -20 //center
         },
-        //hardcoded for now, possibly a param in the future? 
+
         xAxis: {
             min: minimum,
             max: maximum
@@ -19,6 +18,10 @@ function SuccessRateGraph(data,minimum,maximum) {
             title: {
                 text: 'CPU Percent'
             },
+
+            min: 0,
+            max: 100,
+
             plotLines: [{
                 value: 0,
                 width: 1,
