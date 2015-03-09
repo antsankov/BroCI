@@ -1,6 +1,6 @@
 
-function SuccessRateGraph(data,minimum,maximum) { 
-     console.log(data) 
+function SuccessRateGraph(input,minimum,maximum) { 
+
     $('#container').highcharts({
         chart: {
             type: 'line'
@@ -37,7 +37,7 @@ function SuccessRateGraph(data,minimum,maximum) {
             verticalAlign: 'middle',
             borderWidth: 0
         },
-        series: data
+        series: input 
     })
 }
 
