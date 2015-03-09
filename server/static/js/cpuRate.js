@@ -1,5 +1,5 @@
 
-function SuccessRateGraph(input,minimum,maximum) { 
+function cpuRateGraph(input,minimum,maximum) { 
 
     $('#container').highcharts({
         chart: {
@@ -29,7 +29,7 @@ function SuccessRateGraph(input,minimum,maximum) {
             }]
         },
         tooltip: {
-            valueSuffix: '°C'
+            valueSuffix: '%'
         },
         legend: {
             layout: 'vertical',
