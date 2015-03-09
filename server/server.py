@@ -40,7 +40,7 @@ class top_graph(object):
         results = []
 
         #for measure in top_c.find({'time' : {'$lte' : end_time.timestamp} }, { '_id': 0,'pid': 1,'cpu': 1,'time':1}).limit(limit):
-        query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp}}},{"$group":{"_id": "$pid" ,'device_reading': { "$push":{ 'cpu': "$cpu"}}}}]) 
+        query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$cpu"}}}])
         
         for cpu_reading in query['result']: 
             results.append(cpu_reading)

@@ -95,11 +95,12 @@
         <!-- High charts stuff --> 
         <script src="http://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
+        
         <script src="{{ url_for(".static", filename="js/successRate.js") }}"></script>
+        <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
     
-
         <script>
-            var test_db = "{{ test.results|safe }}"; 
+            var test_db = {{ test.results|tojson|safe}}; 
             var min = "{{ test.minimum }}";
             var max = "{{ test.limit }}";
             console.log(test_db);
@@ -127,10 +128,30 @@
                         data: [19,6,25,19,6,25,19,6,25,19,6,25]
                 }]
      
+            var test_3 = [{
+                        _id: '4097', 
+                        data: [19, 6, 25, 25, 19]
+                }, {
+                        _id: '4095',
+                        data: [32, 32, 25, 32, 38]
+                }]
 
- 
-            SuccessRateGraph(test_2,0,12)
-        </script>
+
+            var test_4 =  [{"_id":"bro-standalone-localhost-3050","data":[25,24,12,25,19,6,12,24,12,19,12,12,32,12,6,19,25,25,6,18,6,25,25,19,18,32,25,25,25,32,19,19,25,25,25,25,25,25,25,25,19,24,32,25,12,6,12,19,18,12,25,24,25,25,18,12,18,25,25,25,25,25,18,25,19,18,25,12,25,19,25,19,24,12,25,25,25,25,6,12]}]
+
+            /*  var shit = [{
+                        u'_id': u'4097', 
+                        u'data': [u'19', u'6', u'25', u'25', u'19']
+                }, {
+                        u'_id': u'4095', 
+                        u'data': [u'32', u'32', u'25', u'32', u'38']
+                }] */         
+            cleaned = clean(test_db[0].data)
+            test_db[0].data = clean(test_db[0].data) 
+            console.log(test_db[0])
+            //SuccessRateGraph(JSON.stringify(test_db[0]),0,100)
+            SuccessRateGraph(test_4,0,100)
+    </script>
 
     </body>
 </html>
