@@ -383,7 +383,10 @@ def add_to_db(snapshot,collection):
     for entry in snapshot:
         json_snapshot = entry.__dict__  
         collection.insert(json_snapshot) 
-   
+
+
+
+ 
 def main():
     #connect to the db, and get the collections 
     client = MongoClient('localhost',27017)
@@ -396,7 +399,12 @@ def main():
     top_c.remove()
     netstat_c.remove()
     capstat_c.remove()
- 
+    
+    #create our new indices on time for each of the tables 
+    top_c.create_index("time")
+    netstat_c.create_index("time")
+    capstat_c.create_index("time") 
+
     broctl_refresh()
     file_init()
 
@@ -407,7 +415,8 @@ def main():
 
     # test_config.modify_local_file('TEST_SCRIPT')
     # test_config.modify_node_config(test_device)
-
+    
+    print("Brofiler is collecting stats")
     
     while True: 
 
