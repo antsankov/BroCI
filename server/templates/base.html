@@ -80,8 +80,10 @@
                         </ul>
                     </div>
                     <div class="main-content">
-                        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
-                    </div>
+                        <div id="cpuContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+                        <div id="ramContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+            
+
                 </div>
             </div>
         </div>
@@ -95,10 +97,11 @@
         <!-- High charts stuff --> 
         <script src="http://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
-        
+         
         <script src="{{ url_for(".static", filename="js/cpuRate.js") }}"></script>
+        <script src="{{ url_for(".static", filename="js/ramRate.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
-    
+
         <script>
             //these are the times we can use for all of the top queries
             var topTimes= timeCleaner({{ test.time_stamps|tojson|safe}});
@@ -109,12 +112,13 @@
             var ramQuery= objectsCleaner({{ test.ram_results|tojson|safe}},"ram");
             console.log(ramQuery)
 
-            var min = 0;
+            var cpuMin = 0;
             //TODO possibly base this on the topTimes as opposed to query length?
-            var max = cpuQuery[0].data.length - 1;
+            var cpuMax = cpuQuery[0].data.length - 1;
  
-            cpuRateGraph(cpuQuery,min,max,topTimes)
-    </script>
+            cpuRateGraph('#cpuContainer',cpuQuery,cpuMin,cpuMax,topTimes)
+            ramRateGraph('#ramContainer',ramQuery,cpuMin,cpuMax,0,18000000,topTimes)
+        </script>
 
     </body>
 </html>

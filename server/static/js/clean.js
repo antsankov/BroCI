@@ -11,7 +11,8 @@ function cleanCpu(object){
 function cleanRam(object){
     var sizes = [];
     object.data.forEach(function(measure){
-        sizes.push(humanFileSize(parseInt(measure),false))
+        //sizes.push(humanFileSize(parseInt(measure),false))
+        sizes.push(parseInt(measure));
     })
     object.data = sizes;
     return object;
