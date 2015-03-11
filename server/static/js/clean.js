@@ -1,5 +1,5 @@
 //this function takes in an object, converts its data attribute to an array of ints and returns it.
-function clean(object){
+function cleanCpu(object){
     var ints = [];
     object.data.forEach(function(measure){
         ints.push(parseInt(measure))
@@ -7,6 +7,16 @@ function clean(object){
     object.data = ints;
     return object;
 }
+
+function cleanRam(object){
+    var sizes = [];
+    object.data.forEach(function(measure){
+        sizes.push(humanFileSize(parseInt(measure),false))
+    })
+    object.data = sizes;
+    return object;
+}
+
 
 function timeCleaner(timeArray){
     var cleanedTimes = []
@@ -16,15 +26,36 @@ function timeCleaner(timeArray){
     return cleanedTimes
 }
 
+
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(bytes < thresh) return bytes + ' B';
+    var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(bytes >= thresh);
+    return bytes.toFixed(1)+' '+units[u];
+};
+
+
 //this takes an array of objects, cleans each of their data attributes and returns them as an array.
-function objectsCleaner(objects){
+function objectsCleaner(objects,type){
     var cleaned_objects = [];
     objects.forEach(function(object){
         //create a new attribute and delete id. This is so naming works with highcharts
         object.name = object._id;
         delete object._id;
-     
-        clean_object = clean(object);
+
+        if (type === "cpu"){ 
+            clean_object = cleanCpu(object);
+        }
+
+        if (type === "ram"){
+            clean_object = cleanRam(object);
+        }
+
         cleaned_objects.push(clean_object);
     })
 

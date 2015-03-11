@@ -26,7 +26,6 @@ def base_page(name=None):
     return render_template('base.html',test= test,name= name)
 
 
-
 class top_graph(object):
 
     def __init__(self, start_time, end_time, limit):
@@ -55,11 +54,18 @@ class top_graph(object):
         self.time_stamps = list(self.time_stamps) 
 
  
-        query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$cpu"}}}])
+        cpu_query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$cpu"}}}])
         
-        self.results = []          
-        for cpu_reading in query['result']: 
-            self.results.append(cpu_reading) 
+        self.cpu_results = []          
+        for cpu_reading in cpu_query['result']: 
+            self.cpu_results.append(cpu_reading) 
+
+
+        ram_query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$rss"}}}])
+        
+        self.ram_results = []
+        for ram_reading in ram_query['result']:
+            self.ram_results.append(ram_reading) 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80,debug=True)

@@ -100,13 +100,20 @@
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
     
         <script>
-            //this is the correct way to get the results from the python server. 
-            var topQuery= objectsCleaner({{ test.results|tojson|safe}}); 
+            //these are the times we can use for all of the top queries
             var topTimes= timeCleaner({{ test.time_stamps|tojson|safe}});
+
+            //this is the correct way to get the cpu_results from the python server. 
+            var cpuQuery= objectsCleaner({{ test.cpu_results|tojson|safe}},"cpu");  
+
+            var ramQuery= objectsCleaner({{ test.ram_results|tojson|safe}},"ram");
+            console.log(ramQuery)
+
             var min = 0;
-            var max = topQuery[0].data.length - 1;
+            //TODO possibly base this on the topTimes as opposed to query length?
+            var max = cpuQuery[0].data.length - 1;
  
-            cpuRateGraph(topQuery,min,max,topTimes)
+            cpuRateGraph(cpuQuery,min,max,topTimes)
     </script>
 
     </body>
