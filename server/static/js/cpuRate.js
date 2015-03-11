@@ -1,5 +1,5 @@
 
-function cpuRateGraph(input,minimum,maximum) { 
+function cpuRateGraph(input,minimum,maximum,timeStamps) { 
 
     $('#container').highcharts({
         chart: {
@@ -11,6 +11,7 @@ function cpuRateGraph(input,minimum,maximum) {
         },
 
         xAxis: {
+            categories: timeStamps,
             min: minimum,
             max: maximum
         },

@@ -5,7 +5,7 @@ import arrow
 from flask import *
 from pymongo import *
 from json import dumps
-
+from sets import Set
 app = Flask(__name__)
 
 client = MongoClient('localhost',27017)
@@ -34,14 +34,14 @@ class top_graph(object):
         self.start_time = start_time
         self.end_time = end_time 
         
-        self.time_stamps = [] 
+        self.time_stamps = Set([]) 
 
         self.minimum = 2161728000  
         self.maximum = 0
 
         for time_stamp in top_c.find({'time' : {"$lte" : end_time.timestamp,"$gte" : start_time.timestamp}}, {'time' : 1, '_id' : 0}):
             #just gets the the actual time int
-            time = time_stamp['time'] 
+            time = int(time_stamp['time']) 
             
             if time < self.minimum:
                 self.minimum = time
@@ -49,8 +49,11 @@ class top_graph(object):
             if time > self.maximum: 
                 self.maximum = time
 
-            self.time_stamps.append(time)
-        
+            self.time_stamps.add(time)
+
+        #convert it to a list so it is json serializable
+        self.time_stamps = list(self.time_stamps) 
+
  
         query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$cpu"}}}])
         
