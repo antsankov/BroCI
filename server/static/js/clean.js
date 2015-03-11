@@ -8,8 +8,16 @@ function clean(object){
     return object;
 }
 
+function timeCleaner(timeArray){
+    var cleanedTimes = []
+    timeArray.forEach(function(timestamp){
+        cleanedTimes.push(new Date(timestamp*1000))
+    })
+    return cleanedTimes
+}
+
 //this takes an array of objects, cleans each of their data attributes and returns them as an array.
-function cleaner(objects){
+function objectsCleaner(objects){
     var cleaned_objects = [];
     objects.forEach(function(object){
         //create a new attribute and delete id. This is so naming works with highcharts

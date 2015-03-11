@@ -101,11 +101,11 @@
     
         <script>
             //this is the correct way to get the results from the python server. 
-            var topQuery= cleaner({{ test.results|tojson|safe}}); 
-            var topTimes= {{ test.time_stamps|tojson|safe}};
+            var topQuery= objectsCleaner({{ test.results|tojson|safe}}); 
+            var topTimes= timeCleaner({{ test.time_stamps|tojson|safe}});
             var min = 0;
             var max = topQuery[0].data.length - 1;
-            console.log(topTimes)
+ 
             cpuRateGraph(topQuery,min,max,topTimes)
     </script>
 
