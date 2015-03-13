@@ -1,12 +1,12 @@
 
-function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) { 
+function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeStamps) { 
 
     $(container).highcharts({
         chart: {
             type: 'line'
         },
         title: {
-            text: 'CPU Usage',
+            text: 'RAM Usage (RSS)',
             x: -20 //center
         },
 
@@ -17,11 +17,11 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
         },
         yAxis: {
             title: {
-                text: 'CPU Percent'
+                text: 'RAM'
             },
 
-            min: 0,
-            max: 100,
+            min: minimumY,
+            max: maximumY,
 
             plotLines: [{
                 value: 0,
@@ -30,7 +30,7 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
             }]
         },
         tooltip: {
-            valueSuffix: '%'
+            valueSuffix: 'Bytes'
         },
         legend: {
             layout: 'vertical',
