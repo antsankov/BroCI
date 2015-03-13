@@ -35,24 +35,23 @@ class top_graph(object):
         
         self.time_stamps = Set([]) 
 
-        self.minimum = 2161728000  
-        self.maximum = 0
+        self.time_minimum = 2161728000  
+        self.time_maximum = 0
 
         for time_stamp in top_c.find({'time' : {"$lte" : end_time.timestamp,"$gte" : start_time.timestamp}}, {'time' : 1, '_id' : 0}):
             #just gets the the actual time int
             time = int(time_stamp['time']) 
             
-            if time < self.minimum:
-                self.minimum = time
+            if time < self.time_minimum:
+                self.time_minimum = time
             
-            if time > self.maximum: 
-                self.maximum = time
+            if time > self.time_maximum: 
+                self.time_maximum = time
 
             self.time_stamps.add(time)
 
         #convert it to a list so it is json serializable
         self.time_stamps = list(self.time_stamps) 
-
  
         cpu_query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$cpu"}}}])
         
@@ -60,11 +59,13 @@ class top_graph(object):
         for cpu_reading in cpu_query['result']: 
             self.cpu_results.append(cpu_reading) 
 
+        #this gets a little bigger than the largest memory use, so we can add a y axis on our graph
+        self.ram_maximum = 1.2 * top_c.find_one(sort=[("rss",-1)])['rss'] 
 
         ram_query = top_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$rss"}}}])
         
-        self.ram_results = []
-        for ram_reading in ram_query['result']:
+        self.ram_results = [] 
+        for ram_reading in ram_query['result']: 
             self.ram_results.append(ram_reading) 
 
 if __name__ == '__main__':

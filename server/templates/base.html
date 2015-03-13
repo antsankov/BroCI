@@ -110,14 +110,15 @@
             var cpuQuery= objectsCleaner({{ test.cpu_results|tojson|safe}},"cpu");  
 
             var ramQuery= objectsCleaner({{ test.ram_results|tojson|safe}},"ram");
-            console.log(ramQuery)
+            var ramMax= {{test.ram_maximum | safe}}
+            console.log(ramMax)
 
-            var cpuMin = 0;
+            var timeMin = 0;
             //TODO possibly base this on the topTimes as opposed to query length?
-            var cpuMax = cpuQuery[0].data.length - 1;
+            var timeMax = topTimes.length - 1;
  
-            cpuRateGraph('#cpuContainer',cpuQuery,cpuMin,cpuMax,topTimes)
-            ramRateGraph('#ramContainer',ramQuery,cpuMin,cpuMax,0,18000000,topTimes)
+            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topTimes)
+            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topTimes)
         </script>
 
     </body>
