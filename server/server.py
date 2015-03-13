@@ -20,15 +20,48 @@ def base_page(name=None):
     #this is where we list our timestamp
     start = arrow.get('2014-05-11T21:23:58.970460+00:00')
     end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
-    test = top_graph(start,end,12)
+    top_sample = top_graph(start,end)
+
+    netstat_sample = netstat_graph(start,end)
     
     #find anything in the top collection before the time stamp
-    return render_template('base.html',test= test,name= name)
+    return render_template('base.html',topSample = top_sample,netstatSample = netstat_sample,name= name)
+
+
+class netstat_graph(object):
+
+    def __init__(self, start_time, end_time):
+        
+        self.start_time = start_time
+        self.end_time = end_time 
+        
+        self.time_stamps = Set([]) 
+
+        self.time_minimum = 2161728000  
+        self.time_maximum = 0
+
+        for time_stamp in netstat_c.find({'time' : {"$lte" : end_time.timestamp,"$gte" : start_time.timestamp}}, {'time' : 1, '_id' : 0}):
+            #just gets the the actual time int
+            time = int(time_stamp['time']) 
+            
+            if time < self.time_minimum:
+                self.time_minimum = time
+            
+            if time > self.time_maximum: 
+                self.time_maximum = time
+
+            self.time_stamps.add(time)
+
+        #convert it to a list so it is json serializable
+        self.time_stamps = list(self.time_stamps) 
+
+
+
 
 
 class top_graph(object):
 
-    def __init__(self, start_time, end_time, limit):
+    def __init__(self, start_time, end_time):
         
         self.start_time = start_time
         self.end_time = end_time 

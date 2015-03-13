@@ -24,7 +24,7 @@
                         <span class="app-name"># psdash <small>v0.6.0</small></span>
                     </a>
                 </div>
-                <div class="top-nav">
+                <div class="topSample-nav">
                     <div class="host-info">
                         <div class="name">
                              <span class="hostname"> hostname </span>
@@ -103,22 +103,24 @@
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
 
         <script>
-            //these are the times we can use for all of the top queries
-            var topTimes= timeCleaner({{ test.time_stamps|tojson|safe}});
+            
+            var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
+            console.log(netstatSampleTimes)
+            //these are the times we can use for all of the topSample queries
+            var topSampleTimes= timeCleaner({{ topSample.time_stamps|tojson|safe}});
 
             //this is the correct way to get the cpu_results from the python server. 
-            var cpuQuery= objectsCleaner({{ test.cpu_results|tojson|safe}},"cpu");  
+            var cpuQuery= objectsCleaner({{ topSample.cpu_results|tojson|safe}},"cpu");  
 
-            var ramQuery= objectsCleaner({{ test.ram_results|tojson|safe}},"ram");
-            var ramMax= {{test.ram_maximum | safe}}
-            console.log(ramMax)
-
+            var ramQuery= objectsCleaner({{ topSample.ram_results|tojson|safe}},"ram");
+            var ramMax= {{topSample.ram_maximum | safe}}
+            
             var timeMin = 0;
-            //TODO possibly base this on the topTimes as opposed to query length?
-            var timeMax = topTimes.length - 1;
+            //TODO possibly base this on the topSampleTimes as opposed to query length?
+            var timeMax = topSampleTimes.length - 1;
  
-            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topTimes)
-            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topTimes)
+            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topSampleTimes)
+            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topSampleTimes)
         </script>
 
     </body>

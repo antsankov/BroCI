@@ -207,7 +207,7 @@ class netstat(object):
 
     def __init__(self, device, time, recvd, dropped, link):
         self.device = device
-        self.time = time
+        self.time = float(time)
         self.recvd = float(recvd)
         self.dropped = float(dropped)
         self.link = float(link)
