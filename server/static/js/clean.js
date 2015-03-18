@@ -1,5 +1,5 @@
 //this function takes in an object, converts its data attribute to an array of ints and returns it.
-function cleanCpu(object){
+function clean(object){
     var ints = [];
     object.data.forEach(function(measure){
         ints.push(parseInt(measure))
@@ -13,6 +13,15 @@ function cleanRam(object){
     object.data.forEach(function(measure){
         //sizes.push(humanFileSize(parseInt(measure),false))
         sizes.push(parseInt(measure));
+    })
+    object.data = sizes;
+    return object;
+}
+
+function cleanSuccess(object){
+    var sizes = [];
+    object.data.forEach(function(measure){ 
+        sizes.push(measure);
     })
     object.data = sizes;
     return object;
@@ -50,13 +59,15 @@ function objectsCleaner(objects,type){
         delete object._id;
 
         if (type === "cpu"){ 
-            clean_object = cleanCpu(object);
+            clean_object = clean(object);
         }
 
         if (type === "ram"){
             clean_object = cleanRam(object);
         }
-
+        if (type === "success"){
+            clean_object = cleanSuccess(object);
+        } 
         cleaned_objects.push(clean_object);
     })
 

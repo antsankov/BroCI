@@ -1,12 +1,12 @@
 
-function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) { 
+function successRateGraph(container,input,minimumX,maximumX,timeStamps) { 
 
     $(container).highcharts({
         chart: {
             type: 'line'
         },
         title: {
-            text: 'CPU Usage',
+            text: 'Analyzed Packets',
             x: -20 //center
         },
 
@@ -17,11 +17,11 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
         },
         yAxis: {
             title: {
-                text: 'CPU Percent'
+                text: 'Percent Successful Packets'
             },
 
             min: 0,
-            max: 200,
+            max: 1,
 
             plotLines: [{
                 value: 0,

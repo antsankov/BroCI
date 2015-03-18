@@ -38,7 +38,7 @@ class netstat_graph(object):
         self.time_stamps = Set([]) 
 
         self.time_minimum = 2161728000  
-        self.time_maximum = 0
+        self.time_maximum = 0 
 
         for time_stamp in netstat_c.find({'time' : {"$lte" : end_time.timestamp,"$gte" : start_time.timestamp}}, {'time' : 1, '_id' : 0}):
             #just gets the the actual time int
@@ -55,9 +55,11 @@ class netstat_graph(object):
         #convert it to a list so it is json serializable
         self.time_stamps = list(self.time_stamps) 
 
-
-
-
+        success_rate_query = netstat_c.aggregate([{ "$match" : {'time' : {'$lte' : end_time.timestamp,"$gte" : start_time.timestamp}}},{"$group":{"_id": "$identifier" ,'data': { "$push": "$success"}}}])
+        
+        self.success_results = []          
+        for success_rate in success_rate_query['result']: 
+            self.success_results.append(success_rate) 
 
 class top_graph(object):
 
