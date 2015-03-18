@@ -8,6 +8,15 @@ function clean(object){
     return object;
 }
 
+function cleanSpeed(object){
+    var sizes = [];
+    object.data.forEach(function(measure){ 
+        sizes.push(parseFloat(measure));
+    })
+    object.data = sizes;
+    return object;
+}
+
 function cleanRam(object){
     var sizes = [];
     object.data.forEach(function(measure){
@@ -21,12 +30,11 @@ function cleanRam(object){
 function cleanSuccess(object){
     var sizes = [];
     object.data.forEach(function(measure){ 
-        sizes.push(measure);
+        sizes.push(parseFloat(measure));
     })
     object.data = sizes;
     return object;
 }
-
 
 function timeCleaner(timeArray){
     var cleanedTimes = []
@@ -61,12 +69,17 @@ function objectsCleaner(objects,type){
         if (type === "cpu"){ 
             clean_object = clean(object);
         }
-
         if (type === "ram"){
             clean_object = cleanRam(object);
         }
         if (type === "success"){
-            clean_object = cleanSuccess(object);
+            clean_object = cleanSpeed(object);
+        } 
+        if (type === "speed"){
+            clean_object = cleanSpeed(object);
+        } 
+        else {
+            clean_object = clean(object);
         } 
         cleaned_objects.push(clean_object);
     })
