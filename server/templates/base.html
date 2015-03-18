@@ -24,7 +24,7 @@
                         <span class="app-name"># psdash <small>v0.6.0</small></span>
                     </a>
                 </div>
-                <div class="top-nav">
+                <div class="topSample-nav">
                     <div class="host-info">
                         <div class="name">
                              <span class="hostname"> hostname </span>
@@ -79,11 +79,12 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="main-content">
+                    <div class="main-content"> 
+            
+                        <div id="successContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
                         <div id="cpuContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
                         <div id="ramContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
             
-
                 </div>
             </div>
         </div>
@@ -97,28 +98,33 @@
         <!-- High charts stuff --> 
         <script src="http://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
-         
+ 
+        <script src="{{ url_for(".static", filename="js/successRate.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/cpuRate.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/ramRate.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
 
         <script>
-            //these are the times we can use for all of the top queries
-            var topTimes= timeCleaner({{ test.time_stamps|tojson|safe}});
-
-            //this is the correct way to get the cpu_results from the python server. 
-            var cpuQuery= objectsCleaner({{ test.cpu_results|tojson|safe}},"cpu");  
-
-            var ramQuery= objectsCleaner({{ test.ram_results|tojson|safe}},"ram");
-            var ramMax= {{test.ram_maximum | safe}}
-            console.log(ramMax)
-
+            
+            var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
             var timeMin = 0;
-            //TODO possibly base this on the topTimes as opposed to query length?
-            var timeMax = topTimes.length - 1;
- 
-            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topTimes)
-            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topTimes)
+            var timeMax = netstatSampleTimes.length - 1; 
+
+            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"success"); 
+            successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
+
+
+            //these are the times we can use for all of the topSample queries
+            var topSampleTimes= timeCleaner({{ topSample.time_stamps|tojson|safe}});
+            var timeMin = 0; 
+            var timeMax = topSampleTimes.length - 1;
+            
+            var cpuQuery= objectsCleaner({{ topSample.cpu_results|tojson|safe}},"cpu");  
+            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topSampleTimes);
+
+            var ramQuery= objectsCleaner({{ topSample.ram_results|tojson|safe}},"ram");
+            var ramMax= {{topSample.ram_maximum | safe}}           
+            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topSampleTimes)
         </script>
 
     </body>

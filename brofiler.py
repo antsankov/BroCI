@@ -109,20 +109,6 @@ class top(object):
         self.rss = rss 
         self.cpu = cpu 
         
-    def print_all(self):
-        """ Prints all of the useful information conatined in this object, useful for debugging purposes"""
-        print('TOP')
-        print("time: {}".format(self.time))
-        print("name: {}".format(self.name)) 
-        print("role: {}".format(self.role))
-        print("host: {}".format(self.host))
-        print("pid: {}".format(self.pid))
-        print("proc: {}".format(self.proc))
-        print("vsize: {}".format(self.vsize))
-        print("rss: {}".format(self.rss))
-        print("cpu: {}".format(self.cpu)) 
-        print('======')
-
     def csv_format(self):
         return "{},{},{},{},{},{},{},{},{}\n".format(self.time,self.name,self.role,self.host,self.pid,self.proc,self.vsize,self.rss,self.cpu)
 
@@ -157,7 +143,8 @@ def collect_top():
             # remove the unwanted characters
             top_split = top_split_line[i].strip().split()
             # instantiate the object and add it to the array to be returned
-            top_snapshot.append(
+            if (top_split[7] is not null or top_split[6] is not "Cpu"):
+                top_snapshot.append(
                 top(
                     time.time(),
                     top_split[0], 
@@ -169,6 +156,9 @@ def collect_top():
                     convert_size(top_split[6]),
                     top_split[7].replace('%','')))
 
+            else:
+                print("BAD TOP COLLECTION") 
+
         with open("top.csv","a") as f: 
             for top_device in top_snapshot: 
                 f.write(top_device.csv_format())
@@ -176,7 +166,7 @@ def collect_top():
         return top_snapshot
 
     except subprocess.CalledProcessError:
-        print('FAILED top')
+        print('FAILED top collection')
 
 
 def convert_size(size):
@@ -207,7 +197,7 @@ class netstat(object):
 
     def __init__(self, device, time, recvd, dropped, link):
         self.device = device
-        self.time = time
+        self.time = float(time)
         self.recvd = float(recvd)
         self.dropped = float(dropped)
         self.link = float(link)
@@ -430,6 +420,7 @@ def main():
 
             capstat_snapshot = collect_capstats() 
             add_to_db(capstat_snapshot, capstat_c) 
+            print("Completed a collection cycle")
 
 if __name__ == "__main__":
     main()
