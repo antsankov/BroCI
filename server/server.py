@@ -94,7 +94,7 @@ class netstat_graph(object):
         
         self.success_results = []          
         for success_rate in success_rate_query['result']: 
-            self.success_results.append(success_rate) 
+            self.success_results.append(success_rate)
 
 class top_graph(object):
 

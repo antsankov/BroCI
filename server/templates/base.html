@@ -100,7 +100,7 @@
         <script src="http://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
   
-        <script src="{{ url_for(".static", filename="js/ramRate.js") }}"></script>
+        <script src="{{ url_for(".static", filename="js/brofilerGraphs.js") }}"></script>
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>
 
         <script>
@@ -120,7 +120,8 @@
             var timeMin = 0;
             var timeMax = netstatSampleTimes.length - 1; 
 
-            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"success"); 
+            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed"); 
+            console.log(successQuery)
             successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
             
             /////////////////////////////////////////////////////////////////////////////////

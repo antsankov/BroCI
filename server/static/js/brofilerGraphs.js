@@ -130,7 +130,7 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
 
 
 function successRateGraph(container,input,minimumX,maximumX,timeStamps) { 
-
+    console.log(input)
     $(container).highcharts({
         chart: {
             type: 'line'
