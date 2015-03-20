@@ -1,40 +1,61 @@
 #!/usr/bin/python
 
-
 import arrow
 from flask import *
 from pymongo import *
 from json import dumps
 from sets import Set
+import git, os, shutil
+
+#Initalize Flask
 app = Flask(__name__)
 
+#The connection to the DB 
 client = MongoClient('localhost',27017)
 db = client.brofiler
 top_c = db.top
 netstat_c = db.netstat
-capstat_c = db.capstat 
+capstat_c = db.capstat
 
-@app.route('/')
-def base_page(name=None): 
- 
-    #this is where we list our timestamp
-    start = arrow.get('2014-05-11T21:23:58.970460+00:00')
-    end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
+# See http://www.masnun.com/2012/01/22/fetching-remote-git-repo-with-python-in-a-few-lines-of-codes.html
+def setup_repo(DIR_NAME,REMOTE_URL):
+
+    #this is for a pull
+    if os.path.isdir(DIR_NAME): 
+        repo = git.Repo(DIR_NAME)
+        origin = repo.remotes.origin
+        origin.pull(origin.refs[0].remote_head)
     
-    top_sample = top_graph(start,end)
-    netstat_sample = netstat_graph(start,end)
-    capstat_sample = capstat_graph(start,end)
+    #this is if we need to remake the directory
+    else:
+        os.mkdir(DIR_NAME)
+        repo = git.Repo.init(DIR_NAME)
+        origin = repo.create_remote('origin',REMOTE_URL)
+        origin.fetch()
+        origin.pull(origin.refs[0].remote_head)
+        
+    local = DIR_NAME + '/local.bro'
+    repo_scripts = DIR_NAME + '/scripts/ '
 
-    #find anything in the top collection before the time stamp
-    return render_template('base.html',capstatSample = capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name= name)
+    #copy the local file from the pulled repo to the local on the system
+    shutil.copy(local,'/usr/local/bro/share/bro/site')
+    #move the scripts to the proper direcotry as well
+    #use instead of shutil, because copytree sucks.  
+    os.system("cp -rf "+ repo_scripts + '/usr/local/bro/share/bro/policy/scripts') 
+
+def update_repo(REMOTE_URL):
+    repo = git.Repo.init(REMOTE_URL)
+    o = repo.remotes.origin
+    o.pull()    
+    
 
 class capstat_graph(object):
 
     def __init__(self, start_time, end_time):
-        
+
         self.start_time = start_time
         self.end_time = end_time 
-        
+
         self.time_stamps = Set([]) 
 
         self.time_minimum = 2161728000  
@@ -137,6 +158,27 @@ class top_graph(object):
         self.ram_results = [] 
         for ram_reading in ram_query['result']: 
             self.ram_results.append(ram_reading) 
+
+#######################################################################
+#Initialize some test queries, in the future this should be in a method.
+
+name = "Brofiler"
+start = arrow.get('2014-05-11T21:23:58.970460+00:00')
+end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
+top_sample = top_graph(start,end)
+netstat_sample = netstat_graph(start,end)
+capstat_sample = capstat_graph(start,end)
+
+
+@app.route('/')
+def base_page(name=None):
+      return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
+
+@app.route('/', methods=['POST'])
+def init_git():
+    remote = request.form['remote']
+    setup_repo('GIT_REPO',remote)
+    return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=80,debug=True)

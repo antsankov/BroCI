@@ -399,8 +399,11 @@ def main():
     file_init()
 
     test_config = system_config(
-        '/usr/local/bro/etc/node.cfg',
-        '/home/user/local.bro')
+        '/root/bro_experiments/server/GIT_REPO/node.cfg'
+        '/root/bro_experiments/server/GIT_REPO/load.bro')
+
+        #'/usr/local/bro/etc/node.cfg',
+        #'/home/user/local.bro')
     test_device = bro_device('TEST', 'worker', '1.1.1.1', 'eth0')
 
     # test_config.modify_local_file('TEST_SCRIPT')
