@@ -31,12 +31,13 @@ def setup_repo(DIR_NAME,REMOTE_URL):
     origin.pull(origin.refs[0].remote_head)
     
     local = DIR_NAME + '/local.bro'
-    scripts = DIR_NAME + '/scripts/'
+    scripts = DIR_NAME + '/scripts/ '
 
     #copy the local file from the pulled repo to the local on the system
     shutil.copy(local,'/usr/local/bro/share/bro/site')
-    #move the scripts to the proper direcotry as well 
-    shutil.copytree(scripts,'/usr/local/bro/share/bro/policy/brofiler')
+    #move the scripts to the proper direcotry as well
+    #use instead of shutil, because copytree sucks.  
+    os.system("cp -rf "+ scripts + '/usr/local/bro/share/bro/policy/brofiler') 
 
 class capstat_graph(object):
 
