@@ -29,7 +29,14 @@ def setup_repo(DIR_NAME,REMOTE_URL):
     origin = repo.create_remote('origin',REMOTE_URL)
     origin.fetch()
     origin.pull(origin.refs[0].remote_head)
+    
+    local = DIR_NAME + '/local.bro'
+    scripts = DIR_NAME + '/scripts/'
 
+    #copy the local file from the pulled repo to the local on the system
+    shutil.copy(local,'/usr/local/bro/share/bro/site')
+    #move the scripts to the proper direcotry as well 
+    shutil.copytree(scripts,'/usr/local/bro/share/bro/policy/brofiler')
 
 class capstat_graph(object):
 
