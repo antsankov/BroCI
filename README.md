@@ -17,3 +17,8 @@ This readme is mainly for my own personal notes where I can log interesting comm
 * Local.bro and other scripts to be used by broctl are stored in: ```/usr/local/bro/share/bro/site```
 * Store actual broscript ref'd by local.bro in: ```/usr/local/bro/share/bro/policy/misc```
 * Change node config in: ```/usr/local/bro/etc/```
+
+## Profiler
+The profiler module (profiler.bro) is stored in ```/usr/local/bro/share/bro/site```. There should be an entry in local.bro for it with the line ```@load profiler.bro```. 
+
+A log file only appears when someone calls it with the ```log_event(name)``` function.

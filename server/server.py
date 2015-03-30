@@ -41,7 +41,7 @@ def setup_repo(DIR_NAME,REMOTE_URL):
     shutil.copy(local,'/usr/local/bro/share/bro/site')
     #move the scripts to the proper direcotry as well
     #use instead of shutil, because copytree sucks.  
-    os.system("cp -rf "+ repo_scripts + '/usr/local/bro/share/bro/policy/scripts') 
+    os.system("cp "+ repo_scripts + '/usr/local/bro/share/bro/policy/scripts') 
 
 def update_repo(REMOTE_URL):
     repo = git.Repo.init(REMOTE_URL)

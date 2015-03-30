@@ -1,6 +1,6 @@
 
 ######################################################################
-
+@load profiler.bro
 # This is the script to log the losses
 @load misc/capture-loss
 
