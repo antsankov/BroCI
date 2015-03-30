@@ -21,28 +21,40 @@
             <div class="header">
                 <div class="logo">
                     <a href=" url_for(".index") ">
-                        <span class="app-name"># psdash <small>v0.6.0</small></span>
+                        <span class="app-name">Brofiler <small>v0.1</small></span>
                     </a>
                 </div>
-                <div class="topSample-nav">
-                    <div class="host-info">
-                        <div class="name">
-                             <span class="hostname"> hostname </span>
-                        </div>
-                        <div class="info">
-                             os , uptime:  uptime 
-                        </div>
-                    </div>
-                    <div class="dropdown pull-right">
-                        <span class="dropdown-text">Switch server:</span>
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                             current_node.name  ( current_node.get_id() )
-                            <span class="caret"></span>
-                        </button>
-                        
-                    </div>
-                </div>
             </div>
+     <!-- To get python working again, replace < with { and > with } -->
+     <div class="top-nav">
+        <div class="host-info">
+            <div class="name">
+                 <span class="hostname">Bro 0</span>
+            </div>
+            <div class="info">
+                TESTS PASSING: 9/10
+            </div>
+        </div>
+        <div class="dropdown pull-right">
+            <span class="dropdown-text">Switch server:</span>
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                <!--  << current_node.name >> (<< current_node.get_id() >>) -->
+                Bro Current
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <!-- <% for id, n in nodes.iteritems() %>
+                    <li><a href="<< url_for(".index", node=id) >>"><< n.name >> (<< id >>)</a></li>
+                <% endfor %> -->
+                <li><a>SAMPLE BRO 1</a></li> 
+                <li><a>SAMPLE BRO 2</a></li>
+                <li><a>SAMPLE BRO 3</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+
             <div class="table-container">
                 <div class="content">
                     <div class="left-nav">
