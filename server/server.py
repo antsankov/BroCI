@@ -6,6 +6,7 @@ from pymongo import *
 from json import dumps
 from sets import Set
 import git, os, shutil
+import yaml 
 
 #Initalize Flask
 app = Flask(__name__)
@@ -18,8 +19,8 @@ netstat_c = db.netstat
 capstat_c = db.capstat
 
 # See http://www.masnun.com/2012/01/22/fetching-remote-git-repo-with-python-in-a-few-lines-of-codes.html
-def setup_repo(DIR_NAME,REMOTE_URL):
-
+def setup_repo(REMOTE_URL):
+    DIR_NAME = 'REPO'
     #this is for a pull
     if os.path.isdir(DIR_NAME): 
         repo = git.Repo(DIR_NAME)
@@ -43,11 +44,43 @@ def setup_repo(DIR_NAME,REMOTE_URL):
     #use instead of shutil, because copytree sucks.  
     os.system("cp "+ repo_scripts + '/usr/local/bro/share/bro/policy/scripts') 
 
+
 def update_repo(REMOTE_URL):
     repo = git.Repo.init(REMOTE_URL)
     o = repo.remotes.origin
     o.pull()    
+
+def parse_unit(unit_test_file):
+    unit_tests = []
+
+    with open(unit_test_file,'r') as unit_file:
+        cfg = yaml.load(unit_file)
     
+    for section in cfg:
+        source = cfg[section]['source']
+        pcap = cfg[section]['pcap']
+        count = cfg[section]['count']
+        test = unit_test(source,pcap,count)
+        unit_tests.append(test)
+
+    return unit_tests
+
+class unit_test(object):
+    
+    def __init__(self,source,pcap_path,count):
+        self.source = source
+        self.pcap_path = pcap_path
+        self.count = count  
+
+    def load_pcaps():
+        print("TODO")
+        #send pcap files to traffic generator
+    
+    def start_test():
+        print("TODO")
+        #send message to traffic generator to start transmitting 
+
+
 
 class capstat_graph(object):
 
@@ -172,12 +205,14 @@ capstat_sample = capstat_graph(start,end)
 
 @app.route('/')
 def base_page(name=None):
+      hi = parse_unit('/root/bro_experiments/unit_parser/unittest.yaml')
+      print(len(hi))
       return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 @app.route('/', methods=['POST'])
 def init_git():
     remote = request.form['remote']
-    setup_repo('GIT_REPO',remote)
+    setup_repo(remote)
     return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 if __name__ == '__main__':

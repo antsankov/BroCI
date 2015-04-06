@@ -1,0 +1,8 @@
+test1:
+    source: PCAP
+    pcap: pcap/ssh_brute_force.pcap
+    count: 100
+test2: 
+    source: PCAP 
+    pcap: FOO 
+    count: 10
