@@ -6,12 +6,12 @@ from pymongo import *
 from json import dumps
 from sets import Set
 
-import yaml 
+
 
 
 from profiler_vc import setup_repo, update_repo
 from unit_test import parse_unit, unit_test 
-
+from graphs import capstat_graph, netstat_graph
 
 #Initalize Flask
 app = Flask(__name__)
@@ -22,7 +22,7 @@ db = client.brofiler
 top_c = db.top
 netstat_c = db.netstat
 capstat_c = db.capstat
-
+'''
 class capstat_graph(object):
 
     def __init__(self, start_time, end_time):
@@ -57,7 +57,7 @@ class capstat_graph(object):
             self.speed_results.append(speed) 
 
         self.speed_maximum = 1.2 * float(capstat_c.find_one(sort=[("mbps",-1)])['mbps'])
-        
+
 class netstat_graph(object):
 
     def __init__(self, start_time, end_time):
@@ -90,7 +90,7 @@ class netstat_graph(object):
         self.success_results = []          
         for success_rate in success_rate_query['result']: 
             self.success_results.append(success_rate)
-
+'''
 class top_graph(object):
 
     def __init__(self, start_time, end_time):
@@ -140,8 +140,8 @@ name = "Brofiler"
 start = arrow.get('2014-05-11T21:23:58.970460+00:00')
 end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
 top_sample = top_graph(start,end)
-netstat_sample = netstat_graph(start,end)
-capstat_sample = capstat_graph(start,end)
+netstat_sample = netstat_graph(start,end,netstat_c)
+capstat_sample = capstat_graph(start,end,capstat_c)
 
 
 @app.route('/')
