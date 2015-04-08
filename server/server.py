@@ -31,10 +31,8 @@ top_sample = top_graph(start,end,top_c)
 netstat_sample = netstat_graph(start,end,netstat_c)
 capstat_sample = capstat_graph(start,end,capstat_c)
 
-
 @app.route('/')
 def base_page(name=None):
-    run_tests()  
     return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 @app.route('/', methods=['POST'])
