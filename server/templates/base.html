@@ -17,48 +17,19 @@
         <![endif]-->
     </head>
     <body>
-        <div id="psdash">
+        <div id="psdash"> 
             <div class="header">
-                <div class="logo">
-                    <a href=" url_for(".index") ">
-                        <span class="app-name">Brofiler <small>v0.1</small></span>
-                    </a>
+                <div class="countainer">
+                <div class="logo"> 
+                    <span class="app-name">Brofiler <small>v0.1</small></span> 
                 </div>
-            </div>
-     <!-- To get python working again, replace < with { and > with } -->
-     <div class="top-nav">
-        <div class="host-info">
-            <div class="name">
-                 <span class="hostname">Bro 0</span>
-            </div>
-            <div class="info">
-                TESTS PASSING: 9/10
-            </div>
-        </div>
-        <div class="dropdown pull-right">
-            <span class="dropdown-text">Switch server:</span>
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                <!--  << current_node.name >> (<< current_node.get_id() >>) -->
-                Bro Current
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <!-- <% for id, n in nodes.iteritems() %>
-                    <li><a href="<< url_for(".index", node=id) >>"><< n.name >> (<< id >>)</a></li>
-                <% endfor %> -->
-                <li><a>SAMPLE BRO 1</a></li> 
-                <li><a>SAMPLE BRO 2</a></li>
-                <li><a>SAMPLE BRO 3</a></li>
-            </ul>
-        </div>
-    </div>
-
-
-
+                </div>
+            </div> 
+            
             <div class="table-container">
                 <div class="content">
                     <div class="left-nav">
-                        <ul class="menu">
+                       <ul class="menu">
                             <li {% if page == "overview" %}class="active"{% endif %}>
                                 <a href=" url_for(".index") ">
                                     <span class="glyphicon glyphicon-th"></span>
@@ -93,10 +64,23 @@
                     </div>
                     <div class="main-content"> 
 
-                        <form action ="." method="POST">
-                            <input type="remote" name="remote">
-                            <input type="submit" name="git-form" value="Send">
-                        </form>
+    <div class="row">
+      <div class="col-lg-6">
+        <form action ="." method="POST">
+        <div class="input-group">
+          <span class="input-group-btn">
+            <input type="submit" class="btn btn-default"  name="git-form" value="Send">      
+          </span>
+          <input type="remote" name="remote" class="form-control" placeholder="repo url .git">
+       
+        </div><!-- /input-group --> 
+        </form> 
+       </div><!-- /.col-lg-6 -->
+        <form action ="." method="POST">
+        <button name="start-tests" class="btn btn-info btn-defult">Run Tests</button>
+       </form>
+        </div><!-- /.row -->
+    <hr>
                 
                         <div id="speedContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
                         <div id="successContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 

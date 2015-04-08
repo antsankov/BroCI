@@ -7,7 +7,7 @@ from json import dumps
 
 #profiler modules
 from profiler_vc import setup_repo, update_repo
-from unit_test import parse_unit, unit_test 
+from unit_test import parse_unit, unit_test, run_tests 
 from graphs import capstat_graph, netstat_graph, top_graph
 
 #Initalize Flask
@@ -34,14 +34,19 @@ capstat_sample = capstat_graph(start,end,capstat_c)
 
 @app.route('/')
 def base_page(name=None):
-      hi = parse_unit('./REPO/unittest.yaml')
-      print(len(hi))
-      return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
+    run_tests()  
+    return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 @app.route('/', methods=['POST'])
-def init_git():
-    remote = request.form['remote']
-    setup_repo(remote)
+def index():
+
+    if 'start-tests' in request.form:
+        run_tests()
+
+    elif 'remote' in request.form:
+        remote = request.form['remote']
+        setup_repo(remote)
+    
     return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 if __name__ == '__main__':

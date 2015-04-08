@@ -1,3 +1,6 @@
+##############
+# HARD LINK BEWTEEN GIT VERSION AND THE VERSTION @ /usr/local/bro/share/bro/site
+##############
 module profiler;
 
 export {

@@ -1,3 +1,6 @@
+# This module is used for creating our different graphs on the page. 
+# It makes the queries, and returns the data necessary for the javascript
+
 from sets import Set
 
 class capstat_graph(object):

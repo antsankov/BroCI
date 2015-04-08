@@ -1,3 +1,5 @@
+#This is where we do the git stuff. It takes the input from the box on the page, and downloads the git repo. 
+
 import git, os, shutil
 
 # See http://www.masnun.com/2012/01/22/fetching-remote-git-repo-with-python-in-a-few-lines-of-codes.html
@@ -25,7 +27,6 @@ def setup_repo(REMOTE_URL):
     #move the scripts to the proper direcotry as well
     #use instead of shutil, because copytree sucks.
     os.system("cp "+ repo_scripts + '/usr/local/bro/share/bro/policy/scripts')
-
 
 def update_repo(REMOTE_URL):
     repo = git.Repo.init(REMOTE_URL)
