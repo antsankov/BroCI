@@ -1,5 +1,7 @@
 *.swp
 *.pyo
+REPO/
 .state/
 *.csv
+*.pyc
 pcap/
