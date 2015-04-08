@@ -5,12 +5,12 @@ from flask import *
 from pymongo import *
 from json import dumps
 from sets import Set
-import git, os, shutil
+
 import yaml 
 
 
 from profiler_vc import setup_repo, update_repo
-
+from unit_test import parse_unit, unit_test 
 
 
 #Initalize Flask
@@ -22,37 +22,6 @@ db = client.brofiler
 top_c = db.top
 netstat_c = db.netstat
 capstat_c = db.capstat
-
-
-def parse_unit(unit_test_file):
-    unit_tests = []
-
-    with open(unit_test_file,'r') as unit_file:
-        cfg = yaml.load(unit_file)
-    
-    for section in cfg:
-        source = cfg[section]['source']
-        pcap = cfg[section]['pcap']
-        count = cfg[section]['count']
-        test = unit_test(source,pcap,count)
-        unit_tests.append(test)
-
-    return unit_tests
-
-class unit_test(object):
-    
-    def __init__(self,source,pcap_path,count):
-        self.source = source
-        self.pcap_path = pcap_path
-        self.count = count  
-
-    def load_pcaps():
-        print("TODO")
-        #send pcap files to traffic generator
-    
-    def start_test():
-        print("TODO")
-        #send message to traffic generator to start transmitting 
 
 class capstat_graph(object):
 
@@ -177,7 +146,7 @@ capstat_sample = capstat_graph(start,end)
 
 @app.route('/')
 def base_page(name=None):
-      hi = parse_unit('/root/bro_experiments/unit_parser/unittest.yaml')
+      hi = parse_unit('./REPO/unittest.yaml')
       print(len(hi))
       return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
