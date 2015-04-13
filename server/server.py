@@ -26,7 +26,7 @@ capstat_c = db.capstat
 
 name = "Brofiler"
 start = arrow.get('2014-05-11T21:23:58.970460+00:00')
-end  = arrow.get('2015-05-11T21:23:58.970460+00:00')
+end  = arrow.get('2016-05-11T21:23:58.970460+00:00')
 top_sample = top_graph(start,end,top_c)
 netstat_sample = netstat_graph(start,end,netstat_c)
 capstat_sample = capstat_graph(start,end,capstat_c)

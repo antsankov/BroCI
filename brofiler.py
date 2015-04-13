@@ -143,7 +143,8 @@ def collect_top():
             # remove the unwanted characters
             top_split = top_split_line[i].strip().split()
             # instantiate the object and add it to the array to be returned
-            if (top_split[7] is not null or top_split[6] is not "Cpu"):
+
+            if (top_split[7] is not None or top_split[6] is not "Cpu"):
                 top_snapshot.append(
                 top(
                     time.time(),
@@ -155,7 +156,7 @@ def collect_top():
                     convert_size(top_split[5]),
                     convert_size(top_split[6]),
                     top_split[7].replace('%','')))
-
+    
             else:
                 print("BAD TOP COLLECTION") 
 
@@ -398,9 +399,9 @@ def main():
     broctl_refresh()
     file_init()
 
-    test_config = system_config(
-        '/root/bro_experiments/server/GIT_REPO/node.cfg'
-        '/root/bro_experiments/server/GIT_REPO/load.bro')
+    # test_config = system_config(
+    #   '/root/bro_experiments/server/GIT_REPO/node.cfg'
+    #   '/root/bro_experiments/server/GIT_REPO/load.bro')
 
         #'/usr/local/bro/etc/node.cfg',
         #'/home/user/local.bro')
