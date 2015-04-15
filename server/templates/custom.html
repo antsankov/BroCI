@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!-- CUSTOM --> 
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>BroCI</title>
+        <link href="{{ url_for(".static", filename="css/bootstrap.min.css") }}" rel="stylesheet">
+        <link href="{{ url_for(".static", filename="css/psdash.css") }}" rel="stylesheet">
+        <link href="{{ url_for(".static", filename="css/datePicker.css") }}" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+    <body>
+        <div id="psdash"> 
+            <div class="header">
+                <div class="countainer">
+                <div class="logo"> 
+                    <span class="app-name">Brofiler <small>v0.1</small></span> 
+                </div>
+                </div>
+            </div> 
+            
+            <div class="table-container">
+                <div class="content">
+                    <div class="left-nav">
+                       <ul class="menu">
+                            <li {% if page == "overview" %}class="active"{% endif %}>
+                                <a href=" url_for(".index") ">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                    <span class="option-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li {% if page == "processes" %}class="active"{% endif %}>
+                                <a href=" url_for(".processes") ">
+                                    <span class="glyphicon glyphicon-tasks"></span>
+                                    <span class="option-text">Processes</span>
+                                </a>
+                            </li>
+                            <li {% if page == "network" %}class="active"{% endif %}>
+                                <a href=" url_for(".view_networks") ">
+                                    <span class="glyphicon glyphicon-transfer"></span>
+                                    <span class="option-text">Network</span>
+                                </a>
+                            </li>
+                            <li {% if page == "disks" %}class="active"{% endif %}>
+                                <a href=" url_for(".view_disks") ">
+                                    <span class="glyphicon glyphicon-hdd"></span>
+                                    <span class="option-text">Disks</span>
+                                </a>
+                            </li>
+                            <li {% if page == "logs" %}class="active"{% endif %}>
+                                <a href=" url_for(".view_logs") ">
+                                    <span class="glyphicon glyphicon-book"></span>
+                                    <span class="option-text">Logs</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="main-content"> 
+
+                <div class="row">
+                  <div class="col-lg-8">
+                    <form action ="." method="POST">
+                    <div class="input-group">
+                      <span class="input-group-btn">
+                        <input type="submit" class="btn btn-default"  name="git-form" value="Send">      
+                      </span>
+                      <input type="remote" name="remote" class="form-control" placeholder=".git repo, ex: https://github.com/antsankov/test.git">
+                   
+                    </div><!-- /input-group --> 
+                    </form> 
+                   </div><!-- /.col-lg-6 -->
+                    <form action ="." method="POST">
+                    <button name="start-tests" class="btn btn-info btn-defult">Run Tests</button>
+                   </form>
+                    </div><!-- /.row -->
+                <hr>
+                
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                    100%
+                  </div>
+                </div>
+
+                <hr>
+
+                <div class="container">
+                    <div class="row">
+                        <div class='col-sm-3'>
+                            <div class="form-group">
+                                <div class='input-group date' id='startTime'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='col-sm-3'>
+                            <div class="form-group">
+                                <div class='input-group date' id='endTime'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+ 
+              
+                        <button id="showGraphs" class="btn btn-info btn-defult">Compute Graphs</button> 
+                    </div>
+                </div>
+
+                        <div id="speedContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+                        <div id="successContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+                        <div id="cpuContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+                        <div id="ramContainer" style="min-width: 310px; height: 400px; margin: 0 auto"></div> 
+            
+                </div>
+            </div>
+        </div>
+
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="{{ url_for(".static", filename="js/jquery.min.js") }}"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="{{ url_for(".static", filename="js/bootstrap.min.js") }}"></script>
+        <script src="{{ url_for(".static", filename="js/psdash.js") }}"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"</script>
+        <script src="https://code.jquery.com/ui/1.9.2/jquery-ui.min.js"</script> 
+       
+        <script src="{{ url_for(".static", filename="js/datePicker.js") }}"></script> 
+        <!-- High charts stuff --> 
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+        <script src="{{ url_for(".static", filename="js/brofilerGraphs.js") }}"></script>
+        <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>  
+        
+        <script>
+        
+        $(function() {    
+
+            var start, end = 0;
+
+            $('#startTime').datetimepicker().on("dp.change",function (e) {
+                    start = e.date.valueOf()
+            }); 
+
+            $('#endTime').datetimepicker().on("dp.change",function (e) {
+                    end = e.date.valueOf()
+            });
+
+
+            
+           $('#showGraphs').click(function() {
+                
+               console.log(start)
+               console.log(end) 
+             
+                var data = { start_time : start, end_time : end};
+                console.log(data)
+                $.ajax({
+                    url: '/graphs',
+                    data: data, 
+                    type: 'POST',
+                    success: function(response) { 
+                        console.log("HI")
+                        console.log(timeCleaner({{capstatSample.time_stamps|tojson|safe}}))
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        }); 
+
+
+        $( "#dataTable tbody" ).on( "click", "tr", function() {
+          console.log( $( this ).text() );
+        });
+
+
+
+            var capstatSampleTimes = timeCleaner({{capstatSample.time_stamps|tojson|safe}});
+            var timeMin = 0;
+            var timeMax = capstatSampleTimes.length - 1;
+
+            var speedQuery = objectsCleaner({{capstatSample.speed_results|tojson|safe}},"speed");
+            var speedMax = {{capstatSample.speed_maximum|tojson|safe}}
+
+            speedRateGraph('#speedContainer',speedQuery, timeMin,timeMax,0,speedMax,capstatSampleTimes)
+            
+            /////////////////////////////////////////////////////////////////////////////////
+           
+            var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
+            var timeMin = 0;
+            var timeMax = netstatSampleTimes.length - 1; 
+
+            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed");  
+            successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
+            
+            /////////////////////////////////////////////////////////////////////////////////
+           
+            var topSampleTimes= timeCleaner({{ topSample.time_stamps|tojson|safe}});
+            var timeMin = 0; 
+            var timeMax = topSampleTimes.length - 1;
+            
+            var cpuQuery= objectsCleaner({{ topSample.cpu_results|tojson|safe}},"cpu");  
+            cpuRateGraph('#cpuContainer',cpuQuery, timeMin,timeMax,topSampleTimes);
+
+            var ramQuery= objectsCleaner({{ topSample.ram_results|tojson|safe}},"ram");
+            var ramMax= {{topSample.ram_maximum | safe}}           
+            ramRateGraph('#ramContainer',ramQuery, timeMin,timeMax,0,ramMax,topSampleTimes)
+        </script>
+    </body>
+</html>

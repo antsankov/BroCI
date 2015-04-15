@@ -27,29 +27,34 @@ capstat_c = db.capstat
 name = "Brofiler"
 start = arrow.get('2014-05-11T21:23:58.970460+00:00').timestamp
 end  = arrow.get('2016-05-11T21:23:58.970460+00:00').timestamp
-top_sample = top_graph(start,end,top_c)
-netstat_sample = netstat_graph(start,end,netstat_c)
-capstat_sample = capstat_graph(start,end,capstat_c)
 
 @app.route('/')
+
 def base_page(name=None):
+
+    top_sample = top_graph(start,end,top_c)
+    netstat_sample = netstat_graph(start,end,netstat_c)
+    capstat_sample = capstat_graph(start,end,capstat_c)
+
     return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
 
 @app.route('/graphs', methods=['POST'])
 def show_graphs(): 
     
-    start_time = request.form['start_time']
-    end_time = request.form['end_time']
-
-    print(start_time)
-    print(end_time)
+    start_time = int(request.form['start_time']) / 1000
+    end_time = int(request.form['end_time']) / 1000
 
     top_data = top_graph(start_time, end_time, top_c)
     netstat_data = netstat_graph(start_time,end_time,netstat_c)
     capstat_data = capstat_graph(start_time,end_time,capstat_c)
+    print("NEWW!!!!")
+    print (capstat_data.speed_results) 
+    print (netstat_data.success_results)
+    print (top_data.cpu_results)
 
-    return render_template('base.html',capstatSample=capstat_data,topSample = top_data,netstatSample = netstat_data,name=name) 
+    return top_data 
+   
 
 @app.route('/', methods=['POST'])
 def index():
