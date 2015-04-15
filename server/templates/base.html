@@ -68,7 +68,7 @@
                     <div class="main-content"> 
 
                 <div class="row">
-                  <div class="col-lg-6">
+                  <div class="col-lg-8">
                     <form action ="." method="POST">
                     <div class="input-group">
                       <span class="input-group-btn">
@@ -95,7 +95,7 @@
 
                 <div class="container">
                     <div class="row">
-                        <div class='col-sm-6'>
+                        <div class='col-sm-3'>
                             <div class="form-group">
                                 <div class='input-group date' id='startTime'>
                                     <input type='text' class="form-control" />
@@ -106,7 +106,7 @@
                             </div>
                         </div>
 
-                        <div class='col-sm-6'>
+                        <div class='col-sm-3'>
                             <div class="form-group">
                                 <div class='input-group date' id='endTime'>
                                     <input type='text' class="form-control" />
@@ -116,7 +116,9 @@
                                 </div>
                             </div>
                         </div>
-
+ 
+              
+                        <button id="showGraphs" class="btn btn-info btn-defult">Compute Graphs</button> 
                     </div>
                 </div>
 
@@ -146,15 +148,60 @@
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>  
         
         <script>
-    
+  /*  
             $(function () {
-                $('#startTime').datetimepicker();
+                $('#startTime').datetimepicker().on("dp.change",function (e) {
+                    console.log(e.date.valueOf()) 
+                });
             });
 
 
             $(function () {
                 $('#endTime').datetimepicker();
+                console.log($('#endTime').data("DateTimePicker").date.valueOf())
             });
+*/
+        $(function() {    
+
+            var start, end = 0;
+
+            $('#startTime').datetimepicker().on("dp.change",function (e) {
+                    start = e.date.valueOf()
+            }); 
+
+            $('#endTime').datetimepicker().on("dp.change",function (e) {
+                    end = e.date.valueOf()
+            });
+
+
+            
+           $('#showGraphs').click(function() {
+                
+               console.log(start)
+               console.log(end) 
+             
+                var data = { start_time : start, end_time : end};
+                console.log(data)
+                $.ajax({
+                    url: '/graphs',
+                    data: data, 
+                    type: 'POST',
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        }); 
+
+
+        $( "#dataTable tbody" ).on( "click", "tr", function() {
+          console.log( $( this ).text() );
+        });
+
+
 
             var capstatSampleTimes = timeCleaner({{capstatSample.time_stamps|tojson|safe}});
             var timeMin = 0;
