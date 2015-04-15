@@ -177,18 +177,46 @@
             
            $('#showGraphs').click(function() {
                 
-               console.log(start)
-               console.log(end) 
-             
                 var data = { start_time : start, end_time : end};
-                console.log(data)
+                
                 $.ajax({
                     url: '/graphs',
                     data: data, 
                     type: 'POST',
                     success: function(response) {
-                        console.log(response);
-                    },
+                   
+                        graphs = JSON.parse(response) 
+                        
+                        netstatObject  = graphs.netstat 
+               
+                        console.log(netstatObject)
+                        successRateGraph('#successContainer', netstatObject.success_results, 0,netstatObject.time_stamps.length-1,netstatObject.time_stamps);
+
+
+
+                /*
+                var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
+                var timeMin = 0;
+                var timeMax = netstatSampleTimes.length - 1; 
+
+                var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed"); 
+                console.log(successQuery)
+                successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
+
+                */
+
+
+                        topObject = graphs.top
+
+
+
+
+                        capstatObject = graphs.capstat
+
+                
+                 
+                        
+                     },
                     error: function(error) {
                         console.log(error);
                     }
@@ -214,12 +242,12 @@
             
             /////////////////////////////////////////////////////////////////////////////////
            
+
             var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
             var timeMin = 0;
             var timeMax = netstatSampleTimes.length - 1; 
 
-            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed"); 
-            console.log(successQuery)
+            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed");  
             successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
             
             /////////////////////////////////////////////////////////////////////////////////
