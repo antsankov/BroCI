@@ -43,7 +43,7 @@ function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeSt
 }
 
 function speedRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeStamps) { 
-
+    console.log(input)
     $(container).highcharts({
         chart: {
             type: 'line'
@@ -129,8 +129,7 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
 }
 
 
-function successRateGraph(container,input,minimumX,maximumX,timeStamps) { 
-    console.log(input)
+function successRateGraph(container,input,minimumX,maximumX,timeStamps) {  
     $(container).highcharts({
         chart: {
             type: 'line'

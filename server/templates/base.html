@@ -68,7 +68,7 @@
                     <div class="main-content"> 
 
                 <div class="row">
-                  <div class="col-lg-6">
+                  <div class="col-lg-8">
                     <form action ="." method="POST">
                     <div class="input-group">
                       <span class="input-group-btn">
@@ -83,6 +83,7 @@
                     <button name="start-tests" class="btn btn-info btn-defult">Run Tests</button>
                    </form>
                     </div><!-- /.row -->
+                <!--
                 <hr>
                 
                 <div class="progress">
@@ -90,12 +91,12 @@
                     100%
                   </div>
                 </div>
-
+-->
                 <hr>
 
                 <div class="container">
                     <div class="row">
-                        <div class='col-sm-6'>
+                        <div class='col-sm-3'>
                             <div class="form-group">
                                 <div class='input-group date' id='startTime'>
                                     <input type='text' class="form-control" />
@@ -106,7 +107,7 @@
                             </div>
                         </div>
 
-                        <div class='col-sm-6'>
+                        <div class='col-sm-3'>
                             <div class="form-group">
                                 <div class='input-group date' id='endTime'>
                                     <input type='text' class="form-control" />
@@ -116,7 +117,9 @@
                                 </div>
                             </div>
                         </div>
-
+ 
+              
+                        <button id="showGraphs" class="btn btn-info btn-defult">Compute Graphs</button> 
                     </div>
                 </div>
 
@@ -146,15 +149,60 @@
         <script src="{{ url_for(".static", filename="js/clean.js") }}"></script>  
         
         <script>
-    
+  /*  
             $(function () {
-                $('#startTime').datetimepicker();
+                $('#startTime').datetimepicker().on("dp.change",function (e) {
+                    console.log(e.date.valueOf()) 
+                });
             });
 
 
             $(function () {
                 $('#endTime').datetimepicker();
+                console.log($('#endTime').data("DateTimePicker").date.valueOf())
             });
+*/
+        $(function() {    
+
+            var start, end = 0;
+
+            $('#startTime').datetimepicker().on("dp.change",function (e) {
+                    start = e.date.valueOf()
+            }); 
+
+            $('#endTime').datetimepicker().on("dp.change",function (e) {
+                    end = e.date.valueOf()
+            });
+
+
+            
+           $('#showGraphs').click(function() {
+                
+                var data = { start_time : start, end_time : end};
+                
+                $.ajax({
+                    url: '/graphs',
+                    data: data, 
+                    type: 'POST',
+                    success: function(response) { 
+                        graphs = JSON.parse(response) 
+                        console.log(graphs) 
+                        netstatObject  = graphs.netstat 
+                        topObject = graphs.top 
+                        capstatObject = graphs.capstat  
+
+                        successRateGraph('#successContainer', netstatObject.success_results,0,netstatObject.time_stamps.length-1,timeCleaner(netstatObject.time_stamps));
+                        cpuRateGraph('#cpuContainer',topObject.cpu_results,0,topObject.time_stamps.length-1,timeCleaner(topObject.time_stamps));
+                        ramRateGraph('#ramContainer',topObject.ram_results,0,topObject.time_stamps.length-1,0,topObject.ram_maximum,timeCleaner(topObject.time_stamps));
+                        speedRateGraph('#speedContainer',capstatObject.speed_results, 0,capstatObject.time_stamps.length - 1,0,capstatObject.speed_maximum,timeCleaner(capstatObject.time_stamps));
+                     },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        }); 
+
 
             var capstatSampleTimes = timeCleaner({{capstatSample.time_stamps|tojson|safe}});
             var timeMin = 0;
@@ -167,12 +215,12 @@
             
             /////////////////////////////////////////////////////////////////////////////////
            
+
             var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
             var timeMin = 0;
             var timeMax = netstatSampleTimes.length - 1; 
 
-            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed"); 
-            console.log(successQuery)
+            var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed");  
             successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
             
             /////////////////////////////////////////////////////////////////////////////////
