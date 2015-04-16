@@ -46,9 +46,7 @@ def show_graphs():
 
     top_data = top_graph(start_time, end_time, top_c).__dict__
     netstat_data = netstat_graph(start_time,end_time,netstat_c).__dict__
-    capstat_data = capstat_graph(start_time,end_time,capstat_c).__dict__
-
-    print(capstat_data['speed_results'])
+    capstat_data = capstat_graph(start_time,end_time,capstat_c).__dict__ 
 
     response_dict = { 'top' : top_data, 'netstat' : netstat_data, 'capstat' : capstat_data } 
     response = json.dumps(response_dict)

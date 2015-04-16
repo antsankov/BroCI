@@ -10,10 +10,6 @@ class capstat_graph(object):
         self.start_time = start_time
         self.end_time = end_time
 
-        print start_time
-        print end_time
-
-
         self.time_stamps = Set([])
 
         self.time_minimum = 2161728000
@@ -39,7 +35,7 @@ class capstat_graph(object):
         self.speed_results = []
         for speed in speed_query['result']: 
             self.speed_results.append(speed)
-        print self.speed_results
+        
         self.speed_maximum = 1.2 * float(capstat_c.find_one(sort=[("mbps",-1)])['mbps'])
 
 

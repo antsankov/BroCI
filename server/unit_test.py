@@ -34,8 +34,8 @@ class unit_test(object):
         self.interface = interface
 
     def load_pcaps(self):
-        print("TODO")
-        #send pcap files to traffic generator
+        return True 
+        #send pcap files to traffic generator, right now only works for local traffic generaotr. 
 
     def start(self): 
         command_string = "tcpreplay --topspeed --loop={count} -i {interface} {pcap} &".format(count = self.count, interface = self.interface, pcap = self.pcap_path)

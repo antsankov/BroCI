@@ -189,14 +189,12 @@
                         console.log(graphs) 
                         netstatObject  = graphs.netstat 
                         topObject = graphs.top 
-                        capstatObject = graphs.capstat 
+                        capstatObject = graphs.capstat  
 
-                        console.log(capstatObject.speed_results)
-
-                        successRateGraph('#successContainer', netstatObject.success_results,0,netstatObject.time_stamps.length-1,netstatObject.time_stamps);
-                        cpuRateGraph('#cpuContainer',topObject.cpu_results,0,topObject.time_stamps.length-1,topObject.time_stamps);
-                        ramRateGraph('#ramContainer',topObject.ram_results,0,topObject.time_stamps.length-1,0,topObject.ram_maximum,topObject.time_stamps);
-                        speedRateGraph('#speedContainer',capstatObject.speed_results, 0,capstatObject.time_stamps.length - 1,0,capstatObject.speed_maximum,capstatObject.time_stamps);
+                        successRateGraph('#successContainer', netstatObject.success_results,0,netstatObject.time_stamps.length-1,timeCleaner(netstatObject.time_stamps));
+                        cpuRateGraph('#cpuContainer',topObject.cpu_results,0,topObject.time_stamps.length-1,timeCleaner(topObject.time_stamps));
+                        ramRateGraph('#ramContainer',topObject.ram_results,0,topObject.time_stamps.length-1,0,topObject.ram_maximum,timeCleaner(topObject.time_stamps));
+                        speedRateGraph('#speedContainer',capstatObject.speed_results, 0,capstatObject.time_stamps.length - 1,0,capstatObject.speed_maximum,timeCleaner(capstatObject.time_stamps));
                      },
                     error: function(error) {
                         console.log(error);
