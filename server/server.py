@@ -24,26 +24,16 @@ capstat_c = db.capstat
 #Initialize some test queries 
 ############################
 
-
-class json_response(object):
-
-    def __init__(self,top_object, netstat_object, capstat_object):
-        
-        self.top = json.dumps(top_object.__dict__)
-        self.netstat = json.dumps(netstat_object.__dict__)
-        self.capstat = json.dumps(capstat_object.__dict__)
-
 name = "Brofiler"
 start = arrow.get('2014-05-11T21:23:58.970460+00:00').timestamp
 end  = arrow.get('2016-05-11T21:23:58.970460+00:00').timestamp
 
+top_sample = top_graph(start,end,top_c)
+netstat_sample = netstat_graph(start,end,netstat_c)
+capstat_sample = capstat_graph(start,end,capstat_c)
+
 @app.route('/')
-
 def base_page(name=None):
-
-    top_sample = top_graph(start,end,top_c)
-    netstat_sample = netstat_graph(start,end,netstat_c)
-    capstat_sample = capstat_graph(start,end,capstat_c)
 
     return render_template('base.html',capstatSample=capstat_sample,topSample = top_sample,netstatSample = netstat_sample,name=name)
 
@@ -58,10 +48,10 @@ def show_graphs():
     netstat_data = netstat_graph(start_time,end_time,netstat_c).__dict__
     capstat_data = capstat_graph(start_time,end_time,capstat_c).__dict__
 
-    response_dict = { 'top' : top_data, 'netstat' : netstat_data, 'capstat' : capstat_data }
-    
+    print(capstat_data['speed_results'])
+
+    response_dict = { 'top' : top_data, 'netstat' : netstat_data, 'capstat' : capstat_data } 
     response = json.dumps(response_dict)
-     
     return response 
 
 @app.route('/', methods=['POST'])

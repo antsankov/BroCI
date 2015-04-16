@@ -39,7 +39,7 @@ class capstat_graph(object):
         self.speed_results = []
         for speed in speed_query['result']: 
             self.speed_results.append(speed)
-
+        print self.speed_results
         self.speed_maximum = 1.2 * float(capstat_c.find_one(sort=[("mbps",-1)])['mbps'])
 
 

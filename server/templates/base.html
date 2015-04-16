@@ -83,6 +83,7 @@
                     <button name="start-tests" class="btn btn-info btn-defult">Run Tests</button>
                    </form>
                     </div><!-- /.row -->
+                <!--
                 <hr>
                 
                 <div class="progress">
@@ -90,7 +91,7 @@
                     100%
                   </div>
                 </div>
-
+-->
                 <hr>
 
                 <div class="container">
@@ -183,39 +184,19 @@
                     url: '/graphs',
                     data: data, 
                     type: 'POST',
-                    success: function(response) {
-                   
+                    success: function(response) { 
                         graphs = JSON.parse(response) 
-                        
+                        console.log(graphs) 
                         netstatObject  = graphs.netstat 
-               
-                        console.log(netstatObject)
-                        successRateGraph('#successContainer', netstatObject.success_results, 0,netstatObject.time_stamps.length-1,netstatObject.time_stamps);
+                        topObject = graphs.top 
+                        capstatObject = graphs.capstat 
 
+                        console.log(capstatObject.speed_results)
 
-
-                /*
-                var netstatSampleTimes = timeCleaner({{netstatSample.time_stamps|tojson|safe}});
-                var timeMin = 0;
-                var timeMax = netstatSampleTimes.length - 1; 
-
-                var successQuery = objectsCleaner({{netstatSample.success_results|tojson|safe}},"speed"); 
-                console.log(successQuery)
-                successRateGraph('#successContainer', successQuery, timeMin,timeMax,netstatSampleTimes);
-
-                */
-
-
-                        topObject = graphs.top
-
-
-
-
-                        capstatObject = graphs.capstat
-
-                
-                 
-                        
+                        successRateGraph('#successContainer', netstatObject.success_results,0,netstatObject.time_stamps.length-1,netstatObject.time_stamps);
+                        cpuRateGraph('#cpuContainer',topObject.cpu_results,0,topObject.time_stamps.length-1,topObject.time_stamps);
+                        ramRateGraph('#ramContainer',topObject.ram_results,0,topObject.time_stamps.length-1,0,topObject.ram_maximum,topObject.time_stamps);
+                        speedRateGraph('#speedContainer',capstatObject.speed_results, 0,capstatObject.time_stamps.length - 1,0,capstatObject.speed_maximum,capstatObject.time_stamps);
                      },
                     error: function(error) {
                         console.log(error);
@@ -223,12 +204,6 @@
                 });
             });
         }); 
-
-
-        $( "#dataTable tbody" ).on( "click", "tr", function() {
-          console.log( $( this ).text() );
-        });
-
 
 
             var capstatSampleTimes = timeCleaner({{capstatSample.time_stamps|tojson|safe}});

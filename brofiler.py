@@ -155,7 +155,7 @@ def collect_top():
                     top_split[4],
                     convert_size(top_split[5]),
                     convert_size(top_split[6]),
-                    top_split[7].replace('%','')))
+                    int(top_split[7].replace('%',''))))
     
             else:
                 print("BAD TOP COLLECTION") 
@@ -344,8 +344,8 @@ def collect_capstats():
             capstat(
                 time.time(),
                 capstats_split_word[0],
-                capstats_split_word[1],
-                capstats_split_word[2]))
+                float(capstats_split_word[1]),
+                float(capstats_split_word[2])))
 
     with open("capstats.csv","a") as f: 
         for device_cap in capstats_snapshot:
