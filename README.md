@@ -3,7 +3,26 @@
 This is a collection of BRO scripts and pcap files that I will use to profile bro performance. 
 This readme is mainly for my own personal notes where I can log interesting commands and file locations. 
 
-# Notes
+# To start BroCI 
+(Right now only works with bro running on same device as webserver, traffic generator, and MongoDB)
+1. Start up Mongod 
+2. Run ```brofiler.py```
+    * This will start up bro, collect some stats, and start putting them in DB. 
+    * For now, let it start seeding the DB for about 10 seconds before starting server. 
+3. Start ```server/server.py ```
+    * It will start listening for connections on port 80. 
+
+# Running Bro CI
+1. Create a test git repo to perform CI on. 
+    * TODO: Work with Matt on exact specification on Bro git. 
+    * It should have a ```/scripts``` directory for scripts that we are going to be testing.
+2. Put it into the field on the BroCI homepage and click "Send"
+    * The page will pull the git repo and load the proper scripts into bro. 
+3. Click "Run Tests" 
+    * This will run tcpreplay on all of the files and collect our results. 
+4. You can view the results in finer detail by slecting the time ranges. If you select and invalid timerange the graphs won't show anything.  
+
+# Misc Bro  Notes
 
 * Run ```install``` on broctl after it's been freshly installed. 
 * Change loaded scripts in local.bro
