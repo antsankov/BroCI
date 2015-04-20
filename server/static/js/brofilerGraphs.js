@@ -1,6 +1,6 @@
 /* This file contains all of the graphs we need to display brofiler */
 
-function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeStamps) { 
+function ramRateGraph(container,input,maximumX,maximumY,timeStamps) { 
     $(container).highcharts({
         chart: {
             type: 'line'
@@ -12,7 +12,7 @@ function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeSt
 
         xAxis: {
             categories: timeStamps,
-            min: minimumX,
+            min: 0, 
             max: maximumX
         },
         yAxis: {
@@ -20,7 +20,7 @@ function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeSt
                 text: 'RAM'
             },
 
-            min: minimumY,
+            min: 0,
             max: maximumY,
 
             plotLines: [{
@@ -42,8 +42,7 @@ function ramRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeSt
     })
 }
 
-function speedRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,timeStamps) { 
-    console.log(input)
+function speedRateGraph(container,input,maximumX,maximumY,timeStamps) {  
     $(container).highcharts({
         chart: {
             type: 'line'
@@ -55,7 +54,7 @@ function speedRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,time
 
         xAxis: {
             categories: timeStamps,
-            min: minimumX,
+            min: 0,
             max: maximumX
         },
         yAxis: {
@@ -63,7 +62,7 @@ function speedRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,time
                 text: 'speed'
             },
 
-            min: minimumY,
+            min: 0,
             max: maximumY,
 
             plotLines: [{
@@ -85,7 +84,7 @@ function speedRateGraph(container,input,minimumX,maximumX,minimumY,maximumY,time
     })
 }
 
-function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) { 
+function cpuRateGraph(container,input,maximumX,timeStamps) { 
 
     $(container).highcharts({
         chart: {
@@ -98,7 +97,7 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
 
         xAxis: {
             categories: timeStamps,
-            min: minimumX,
+            min: 0, 
             max: maximumX
         },
         yAxis: {
@@ -129,7 +128,7 @@ function cpuRateGraph(container,input,minimumX,maximumX,timeStamps) {
 }
 
 
-function successRateGraph(container,input,minimumX,maximumX,timeStamps) {  
+function successRateGraph(container,input,maximumX,timeStamps) {  
     $(container).highcharts({
         chart: {
             type: 'line'
@@ -141,7 +140,7 @@ function successRateGraph(container,input,minimumX,maximumX,timeStamps) {
 
         xAxis: {
             categories: timeStamps,
-            min: minimumX,
+            min: 0, 
             max: maximumX
         },
         yAxis: {

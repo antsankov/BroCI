@@ -390,7 +390,7 @@ def main():
     top_c.remove()
     netstat_c.remove()
     capstat_c.remove()
-    
+   
     #create our new indices on time for each of the tables 
     top_c.create_index("time")
     netstat_c.create_index("time")

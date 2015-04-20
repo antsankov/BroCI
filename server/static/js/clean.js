@@ -1,5 +1,5 @@
 //this function takes in an object, converts its data attribute to an array of ints and returns it.
-function clean(object){
+function cleanCpu(object){
     var ints = [];
     object.data.forEach(function(measure){
         ints.push(parseInt(measure))
@@ -61,13 +61,15 @@ function humanFileSize(bytes, si) {
 //this takes an array of objects, cleans each of their data attributes and returns them as an array.
 function objectsCleaner(objects,type){
     var cleaned_objects = [];
+    console.log("================")
     objects.forEach(function(object){
+        console.log(object) 
         //create a new attribute and delete id. This is so naming works with highcharts
         object.name = object._id;
         delete object._id;
 
         if (type === "cpu"){ 
-            clean_object = clean(object);
+            clean_object = cleanCpu(object);
         }
         if (type === "ram"){
             clean_object = cleanRam(object);
@@ -79,7 +81,7 @@ function objectsCleaner(objects,type){
             clean_object = cleanSpeed(object);
         } 
         else {
-            clean_object = clean(object);
+            clean_object = cleanCpu(object);
         } 
         cleaned_objects.push(clean_object);
     })
