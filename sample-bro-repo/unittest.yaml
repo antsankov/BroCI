@@ -1,0 +1,23 @@
+test1:
+    source: PCAP
+    pcap: pcap/browse_final_1.pcap 
+    count: 1000 
+    interface: eth0
+
+test2: 
+    source: PCAP 
+    pcap: pcap/c1_final.pcap
+    count: 300
+    interface: eth0
+
+shellshock: 
+    source: PCAP
+    pcap: pcap/exploit.pcap
+    count: 1000 
+    interface: eth0
+
+ssn_exposure: 
+    source: PCAP
+    pcap: pcap/c1_final.pcap
+    count: 100 
+    interface: eth0

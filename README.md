@@ -13,8 +13,7 @@ This readme is mainly for my own personal notes where I can log interesting comm
     * It will start listening for connections on port 80. 
 
 # Running Bro CI
-1. Create a test git repo to perform CI on. 
-    * TODO: Work with Matt on exact specification on Bro git. 
+1. Create a test git repo to perform CI on.  
     * It should have a ```/scripts``` directory for scripts that we are going to be testing.
 2. Put it into the field on the BroCI homepage and click "Send"
     * The page will pull the git repo and load the proper scripts into bro. 
