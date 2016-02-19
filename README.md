@@ -1,7 +1,6 @@
 # Intro 
 
-This is a collection of BRO scripts and pcap files that I will use to profile bro performance. 
-This readme is mainly for my own personal notes where I can log interesting commands and file locations. 
+BroCI is a system that you can use to both test and profile Bro scripts before deployment. You can see the sample-repo for an example of how a repository would be configured to work with BroCI.
 
 # To start BroCI 
 (Right now only works with bro running on same device as webserver, traffic generator, and MongoDB)
